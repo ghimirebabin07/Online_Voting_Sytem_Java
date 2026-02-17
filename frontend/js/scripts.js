@@ -1,4 +1,4 @@
-// Login Form Validation (optional)
+
 document.addEventListener("DOMContentLoaded", function() {
     const loginForm = document.getElementById("loginForm");
 
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if(username === "" || password === "") {
             alert("Please enter both username and password.");
-            e.preventDefault(); // prevent form submission
+            e.preventDefault();
         }
     });
 });
