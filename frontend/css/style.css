@@ -1,12 +1,11 @@
-/* General Reset */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
+    font-family: 'Times New Roman', Times, serif, sans-serif;
 }
 
-/* Login Container */
 .login-container {
     width: 350px;
     margin: 100px auto;
@@ -68,4 +67,23 @@ button:hover {
 
 .register-link a:hover {
     text-decoration: underline;
+}
+body {
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+}
+
+.page-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.login-container p {
+    text-align: center;
+}
+
+.error-message {
+    color: red;
+    font-size: 13px;
+    margin-top: 5px;
 }

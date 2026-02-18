@@ -1,0 +1,37 @@
+<link rel="stylesheet" href="../css/style.css">
+<div class="login-container">
+
+    <h2 class="page-title">Register</h2>
+
+    <form id="registerForm" method="post">
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Enter your name" required>
+        </div>
+
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="text" pattern="9[876]\d{8}" maxlength="10" required>
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" required>
+        </div>
+
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="confirmPassword" required>
+        </div>
+
+        <button type="submit">Register</button>
+
+        <div class="register-link">
+            Already have an account?
+            <a href="login.html">Login</a>
+        </div>
+
+    </form>
+
+</div>
