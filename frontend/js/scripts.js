@@ -15,14 +15,28 @@ document.addEventListener("DOMContentLoaded", function() {
 const registerForm = document.getElementById("registerForm");
 
 if (registerForm) {
+
     registerForm.addEventListener("submit", function(event) {
 
-        const password = document.getElementById("password").value;
-        const confirmPassword = document.getElementById("confirmPassword").value;
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
+
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        let oldError = document.querySelector(".error-message");
+        if (oldError) {
+            oldError.remove();
+        }
+        confirmPasswordInput.style.border = "1px solid #aaa";
 
         if (password !== confirmPassword) {
-            alert("Passwords do not match!");
             event.preventDefault();
+            confirmPasswordInput.style.border = "1px solid red";
+            const error = document.createElement("div");
+            error.className = "error-message";
+            error.textContent = "Passwords do not match!";
+
+            confirmPasswordInput.parentElement.appendChild(error);
         }
     });
 }
