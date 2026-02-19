@@ -1,37 +1,67 @@
-<link rel="stylesheet" href="../css/style.css">
-<div class="login-container">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - Online Voting System</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
 
-    <h2 class="page-title">Register</h2>
+    <div class="card">
+        <h2>Register</h2>
 
-    <form id="registerForm" method="post">
+        <form id="registerForm">
 
-        <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" placeholder="Enter your name" required>
-        </div>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input
+                    type="text"
+                    placeholder="Enter your name"
+                    required
+                >
+            </div>
 
-        <div class="form-group">
-            <label>Mobile Number</label>
-            <input type="text" pattern="9[876]\d{8}" maxlength="10" required>
-        </div>
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input
+                    type="text"
+                    pattern="9[876]\d{8}"
+                    maxlength="10"
+                    placeholder="Enter your mobile number"
+                    required
+                >
+            </div>
 
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="password" required>
-        </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password"
+                    required
+                >
+            </div>
 
-        <div class="form-group">
-            <label>Confirm Password</label>
-            <input type="password" id="confirmPassword" required>
-        </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm password"
+                    required
+                >
+            </div>
 
-        <button type="submit">Register</button>
+            <button type="submit">Register</button>
 
-        <div class="register-link">
-            Already have an account?
-            <a href="login.html">Login</a>
-        </div>
+            <div class="link-text">
+                Already have an account?
+                <a href="login.html">Login</a>
+            </div>
 
-    </form>
+        </form>
+    </div>
 
-</div>
+    <script src="js/script.js"></script>
+</body>
+</html>
