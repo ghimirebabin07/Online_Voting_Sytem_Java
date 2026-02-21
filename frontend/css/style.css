@@ -97,3 +97,29 @@ button:hover {
 .link-text a:hover {
     text-decoration: underline;
 }
+.admin-section {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+.admin-box {
+    flex: 1;
+    padding: 15px;
+    background-color: #f2f2f2;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.admin-box h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.admin-box p {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+}
