@@ -28,3 +28,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+function addCandidate() {
+    alert("Add Candidate feature coming soon!");
+}
+
+function viewResults() {
+    alert("View Results feature coming soon!");
+}
+
+function logout() {
+    window.location.href = "index.html";
+}
+// Admin Login
+const adminForm = document.getElementById("adminLoginForm");
+
+if (adminForm) {
+    adminForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const username = document.getElementById("adminUsername").value;
+        const password = document.getElementById("adminPassword").value;
+
+        // Simple hardcoded admin credentials
+        if (username === "admin" && password === "admin123") {
+            alert("Admin Login Successful!");
+            window.location.href = "admin.html";
+        } else {
+            alert("Invalid Admin Credentials!");
+        }
+    });
+}

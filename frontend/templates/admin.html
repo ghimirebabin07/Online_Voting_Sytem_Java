@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Online Voting System</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <div class="card">
+        <h2>Admin Dashboard</h2>
+
+        <div class="admin-section">
+
+            <div class="admin-box">
+                <h3>Total Voters</h3>
+                <p id="totalVoters">0</p>
+            </div>
+
+            <div class="admin-box">
+                <h3>Total Candidates</h3>
+                <p id="totalCandidates">0</p>
+            </div>
+
+            <div class="admin-box">
+                <h3>Total Votes</h3>
+                <p id="totalVotes">0</p>
+            </div>
+
+        </div>
+
+        <div class="button-group">
+            <button onclick="addCandidate()">Add Candidate</button>
+            <button onclick="viewResults()">View Results</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+
+    </div>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>
