@@ -50,7 +50,7 @@ if (adminForm) {
         const password = document.getElementById("adminPassword").value;
 
         // Simple hardcoded admin credentials
-        if (username === "admin" && password === "admin123") {
+        if (username === "admin" && password === "admin12") {
             alert("Admin Login Successful!");
             window.location.href = "admin.html";
         } else {
