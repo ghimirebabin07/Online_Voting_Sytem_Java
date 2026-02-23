@@ -72,9 +72,9 @@ if (!localStorage.getItem("candidates")) {
             votes: 0
         },
         {
-            name: "Sita Karki",
-            party: "National Party",
-            image: "../Images/Balen.jpg",
+            name: "Sobita Gautam",
+            party: "Rastya Party",
+            image: "../Images/Sobita.jpg",
             votes: 0
         }
     ];
