@@ -150,3 +150,59 @@ function logout() {
     localStorage.removeItem("hasVoted");
     window.location.href = "login.html";
 }
+function viewResults() {
+    window.location.href = "result.html";
+}
+
+function goBackAdmin() {
+    window.location.href = "admin-dashboard.html";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const resultContainer = document.getElementById("resultContainer");
+    if (!resultContainer) return;
+
+    // Get data from localStorage
+    let candidates = JSON.parse(localStorage.getItem("candidates")) || [];
+
+    let totalVotes = 0;
+
+    candidates.forEach(candidate => {
+        totalVotes += candidate.votes;
+    });
+
+    let highestVote = 0;
+    candidates.forEach(candidate => {
+        if (candidate.votes > highestVote) {
+            highestVote = candidate.votes;
+        }
+    });
+
+    candidates.forEach(candidate => {
+
+        let percentage = totalVotes === 0 
+            ? 0 
+            : ((candidate.votes / totalVotes) * 100).toFixed(1);
+
+        let resultBox = document.createElement("div");
+        resultBox.classList.add("result-box");
+
+        if (candidate.votes === highestVote && totalVotes > 0) {
+            resultBox.classList.add("winner");
+        }
+
+        resultBox.innerHTML = `
+            <h3>${candidate.name}</h3>
+            <p>Total Votes: ${candidate.votes}</p>
+            <div class="progress-bar">
+                <div class="progress" style="width:${percentage}%">
+                    ${percentage}%
+                </div>
+            </div>
+        `;
+
+        resultContainer.appendChild(resultBox);
+    });
+
+});
