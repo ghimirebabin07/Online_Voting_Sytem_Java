@@ -1,208 +1,220 @@
-document.addEventListener("DOMContentLoaded", function () {
 
-    const loginForm = document.getElementById("loginForm");
-    const registerForm = document.getElementById("registerForm");
-    if (loginForm) {
-        loginForm.addEventListener("submit", function (e) {
-
-            const phone = document.getElementById("phone").value.trim();
-            const password = document.getElementById("password").value.trim();
-
-            if (phone === "" || password === "") {
-                alert("Please enter both phone and password.");
-                e.preventDefault();
-            }
-        });
-    }
-    if (registerForm) {
-        registerForm.addEventListener("submit", function (e) {
-
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirmPassword").value;
-
-            if (password !== confirmPassword) {
-                alert("Passwords do not match!");
-                e.preventDefault();
-            }
-        });
-    }
-
-});
-function addCandidate() {
-    alert("Add Candidate feature coming soon!");
-}
-
-function viewResults() {
-    alert("View Results feature coming soon!");
-}
-
-function logout() {
-    window.location.href = "index.html";
-}
-// Admin Login
-const adminForm = document.getElementById("adminLoginForm");
-
-if (adminForm) {
-    adminForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const username = document.getElementById("adminUsername").value;
-        const password = document.getElementById("adminPassword").value;
-
-        // Simple hardcoded admin credentials
-        if (username === "admin" && password === "admin12") {
-            alert("Admin Login Successful!");
-            window.location.href = "admin.html";
-        } else {
-            alert("Invalid Admin Credentials!");
-        }
-    });
-}
-// ===============================
-// DEFAULT CANDIDATE DATA (ONLY RUNS FIRST TIME)
-// ===============================
-
+// INITIAL DATA (RUN ONLY ONCE)
 if (!localStorage.getItem("candidates")) {
-
-    let defaultCandidates = [
+    const candidates = [
         {
+            id: 1,
             name: "Balen Shah",
-            party: "Independent",
+            party: "Rastriya Swatantra Party",
             image: "../Images/Balen_.jpg",
+            symbol: "../Images/RSP.jpg",
             votes: 0
         },
         {
+            id: 2,
+            name: "Rabi Lamichhane",
+            party: "Rastriya Swatantra Party",
+            image: "../Images/Rabi.jpg",
+            symbol: "../Images/RSP.jpg",
+            votes: 0
+        },
+        {
+            id: 3,
             name: "Sobita Gautam",
-            party: "Rastya Party",
+            party: "Rastriya Swatantra Party",
             image: "../Images/Sobita.jpg",
+            symbol: "../Images/RSP.jpg",
             votes: 0
         }
     ];
 
-    localStorage.setItem("candidates", JSON.stringify(defaultCandidates));
+    localStorage.setItem("candidates", JSON.stringify(candidates));
 }
 
 
 
-// ===============================
-// LOAD CANDIDATES ON VOTE PAGE
-// ===============================
 
-document.addEventListener("DOMContentLoaded", function () {
+
+
+// REGISTER
+
+
+function registerUser() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    let users = JSON.parse(localStorage.getItem("users"));
+
+    const userExists = users.find(user => user.username === username);
+
+    if (userExists) {
+        alert("User already exists!");
+        return;
+    }
+
+    users.push({
+        username: username,
+        password: password,
+        role: "user",
+        voted: false
+    });
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Registration Successful!");
+    window.location.href = "login.html";
+}
+
+
+
+
+
+// LOGIN
+
+function loginUser() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    let users = JSON.parse(localStorage.getItem("users"));
+
+    const validUser = users.find(
+        user => user.username === username && user.password === password
+    );
+
+    if (!validUser) {
+        alert("Invalid credentials!");
+        return;
+    }
+
+    localStorage.setItem("loggedInUser", JSON.stringify(validUser));
+
+    if (validUser.role === "admin") {
+        window.location.href = "admin.html";
+    } else {
+        window.location.href = "index.html";
+    }
+}
+
+
+
+
+
+
+// LOAD CANDIDATES (VOTE PAGE)
+
+
+function loadCandidates() {
 
     const container = document.getElementById("candidateContainer");
     if (!container) return;
 
-    let candidates = JSON.parse(localStorage.getItem("candidates")) || [];
+    const candidates = JSON.parse(localStorage.getItem("candidates"));
 
-    // Check if already voted
-    if (localStorage.getItem("hasVoted") === "true") {
-        container.innerHTML = "<h3>You have already voted!</h3>";
+    container.innerHTML = "";
+
+    candidates.forEach(candidate => {
+
+        container.innerHTML += `
+            <div class="candidate-row">
+
+                <img class="party-symbol" src="${candidate.symbol}" alt="symbol">
+
+                <div class="candidate-info">
+                    <img class="candidate-photo" src="${candidate.image}" alt="${candidate.name}">
+                    
+                    <div class="candidate-details">
+                        <h3>${candidate.name}</h3>
+                        <p>${candidate.party}</p>
+                    </div>
+                </div>
+
+                <button class="vote-btn" onclick="vote(${candidate.id})">
+                    Vote
+                </button>
+
+            </div>
+        `;
+    });
+}
+
+
+
+
+
+
+// VOTE FUNCTION
+
+
+function vote(id) {
+
+    let loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!loggedUser) {
+        alert("Please login first!");
+        window.location.href = "login.html";
         return;
     }
 
-    candidates.forEach((candidate, index) => {
+    if (loggedUser.voted) {
+        alert("You have already voted!");
+        return;
+    }
 
-        let card = document.createElement("div");
-        card.classList.add("candidate-card");
+    let candidates = JSON.parse(localStorage.getItem("candidates"));
 
-        card.innerHTML = `
-            <img src="${candidate.image}" alt="Candidate Image">
-            <h3>${candidate.name}</h3>
-            <p>Party: ${candidate.party}</p>
-            <button class="vote-btn" onclick="castVote(${index})">
-                Vote
-            </button>
-        `;
-
-        container.appendChild(card);
-    });
-
-});
-
-
-
-// ===============================
-// CAST VOTE FUNCTION
-// ===============================
-
-function castVote(index) {
-
-    let candidates = JSON.parse(localStorage.getItem("candidates")) || [];
-
-    candidates[index].votes += 1;
+    const candidate = candidates.find(c => c.id === id);
+    candidate.votes += 1;
 
     localStorage.setItem("candidates", JSON.stringify(candidates));
-    localStorage.setItem("hasVoted", "true");
 
-    alert("Vote cast successfully!");
+    // update user voted status
+    let users = JSON.parse(localStorage.getItem("users"));
+    const userIndex = users.findIndex(u => u.username === loggedUser.username);
+
+    users[userIndex].voted = true;
+
+    localStorage.setItem("users", JSON.stringify(users));
+    localStorage.setItem("loggedInUser", JSON.stringify(users[userIndex]));
+
+    alert("Vote Successful!");
 
     window.location.href = "result.html";
 }
 
 
 
-// ===============================
-// LOGOUT FUNCTION
-// ===============================
 
-function logout() {
-    localStorage.removeItem("hasVoted");
-    window.location.href = "login.html";
-}
-function viewResults() {
-    window.location.href = "result.html";
-}
 
-function goBackAdmin() {
-    window.location.href = "admin-dashboard.html";
-}
 
-document.addEventListener("DOMContentLoaded", function () {
+// LOAD RESULTS
 
-    const resultContainer = document.getElementById("resultContainer");
-    if (!resultContainer) return;
 
-    // Get data from localStorage
-    let candidates = JSON.parse(localStorage.getItem("candidates")) || [];
+function loadResults() {
+    const container = document.getElementById("resultContainer");
 
-    let totalVotes = 0;
+    if (!container) return;
+
+    const candidates = JSON.parse(localStorage.getItem("candidates"));
+
+    container.innerHTML = "";
 
     candidates.forEach(candidate => {
-        totalVotes += candidate.votes;
-    });
-
-    let highestVote = 0;
-    candidates.forEach(candidate => {
-        if (candidate.votes > highestVote) {
-            highestVote = candidate.votes;
-        }
-    });
-
-    candidates.forEach(candidate => {
-
-        let percentage = totalVotes === 0 
-            ? 0 
-            : ((candidate.votes / totalVotes) * 100).toFixed(1);
-
-        let resultBox = document.createElement("div");
-        resultBox.classList.add("result-box");
-
-        if (candidate.votes === highestVote && totalVotes > 0) {
-            resultBox.classList.add("winner");
-        }
-
-        resultBox.innerHTML = `
-            <h3>${candidate.name}</h3>
-            <p>Total Votes: ${candidate.votes}</p>
-            <div class="progress-bar">
-                <div class="progress" style="width:${percentage}%">
-                    ${percentage}%
-                </div>
+        container.innerHTML += `
+            <div class="result-card">
+                <h3>${candidate.name}</h3>
+                <p>Votes: ${candidate.votes}</p>
             </div>
         `;
-
-        resultContainer.appendChild(resultBox);
     });
+}
 
+
+
+
+
+// AUTO LOAD FUNCTIONS
+
+document.addEventListener("DOMContentLoaded", function () {
+    loadCandidates();
+    loadResults();
 });
