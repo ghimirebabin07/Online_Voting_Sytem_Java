@@ -1,20 +1,25 @@
+/*  GLOBAL  */
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Times New Roman', Times, serif
+    font-family: 'Times New Roman', Times, serif;
 }
 
-
 body {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    min-height: 100vh;
     background: linear-gradient(135deg, #4e73df, #1cc88a);
 }
 
+
+/*  CENTER CARD PAGES (LOGIN / REGISTER / DASHBOARD) */
+
+.center-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .card {
     background: #ffffff;
@@ -25,12 +30,7 @@ body {
     text-align: center;
 }
 
-
-.card h1 {
-    margin-bottom: 25px;
-    color: #333;
-}
-
+.card h1,
 .card h2 {
     margin-bottom: 20px;
     color: #333;
@@ -89,7 +89,7 @@ button:hover {
 }
 
 .link-text a {
-    color: #90a9f4;
+    color: #4e73df;
     text-decoration: none;
     font-weight: bold;
 }
@@ -97,101 +97,89 @@ button:hover {
 .link-text a:hover {
     text-decoration: underline;
 }
-.admin-section {
+
+
+/*  VOTE PAGE  */
+
+.main-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 40px auto;
+}
+
+.main-container h2 {
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.candidate-row {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    margin: 20px 0;
-    gap: 10px;
-}
-
-.admin-box {
-    flex: 1;
+    background: #ffffff;
     padding: 15px;
-    background-color: #f2f2f2;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-}
-
-.admin-box h3 {
-    margin-bottom: 10px;
-    font-size: 16px;
-}
-
-.admin-box p {
-    font-size: 22px;
-    font-weight: bold;
-    color: #333;
-}
-/* Voting Page Styling */
-
-.candidate-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-}
-#candidateContainer img {
-    width: 220px;        /* Image width */
-    height: 250px;       /* Image height */
-    object-fit: cover;   /* Prevent stretching */
-    border-radius: 10px; /* Smooth corners */
-    display: block;
-    margin: 20px auto;   /* Center image */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-.candidate-card {
-    width: 220px;
-    background: #f4f4f4;
     border-radius: 10px;
-    padding: 15px;
-    text-align: center;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    transition: 0.3s;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
 
-.candidate-card:hover {
-    transform: scale(1.01);
+/* Party Symbol */
+.party-symbol {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
 }
 
-.candidate-card img {
-    width: 100%;
-    height: 180px;
+/* Candidate Info */
+.candidate-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+    margin-left: 15px;
+}
+
+.candidate-photo {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
     object-fit: cover;
-    border-radius: 8px;
 }
 
-.candidate-card h3 {
-    margin: 10px 0 5px;
+.candidate-details h3 {
+    margin: 0;
+    font-size: 18px;
 }
 
-.candidate-card p {
-    margin-bottom: 10px;
+.candidate-details p {
+    margin: 5px 0 0;
     font-size: 14px;
+    color: gray;
 }
 
 .vote-btn {
-    background: #4CAF50;
-    color: white;
+    padding: 8px 20px;
+    background: #1cc88a;
     border: none;
-    padding: 8px 15px;
+    color: white;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .vote-btn:hover {
-    background: #45a049;
+    background: #17a673;
 }
+
+
+/*  RESULT PAGE */
+
 .result-box {
     background-color: #f2f2f2;
     padding: 15px;
     margin: 10px 0;
     border-radius: 8px;
-}
-
-.result-box h3 {
-    margin-bottom: 5px;
 }
 
 .progress-bar {
