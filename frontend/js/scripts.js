@@ -8,7 +8,7 @@ if (!localStorage.getItem("candidates")) {
             party: "Rastriya Swatantra Party",
             image: "../Images/Balen_.jpg",
             symbol: "../Images/RSP.jpg",
-            votes: 0
+            votes: 1
         },
         {
             id: 2,
