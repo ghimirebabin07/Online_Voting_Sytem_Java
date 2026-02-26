@@ -1,6 +1,15 @@
 
-// INITIAL DATA (RUN ONLY ONCE)
+// INITIAL SETUP (RUN ONLY ONCE)
+
+
+// Initialize users if not exists
+if (!localStorage.getItem("users")) {
+    localStorage.setItem("users", JSON.stringify([]));
+}
+
+// Initialize candidates if not exists
 if (!localStorage.getItem("candidates")) {
+
     const candidates = [
         {
             id: 1,
@@ -8,7 +17,7 @@ if (!localStorage.getItem("candidates")) {
             party: "Rastriya Swatantra Party",
             image: "../Images/Balen_.jpg",
             symbol: "../Images/RSP.jpg",
-            votes: 1
+            votes: 0
         },
         {
             id: 2,
@@ -33,13 +42,11 @@ if (!localStorage.getItem("candidates")) {
 
 
 
-
-
-
-// REGISTER
+// REGISTER FUNCTION
 
 
 function registerUser() {
+
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
@@ -67,11 +74,11 @@ function registerUser() {
 
 
 
+// LOGIN FUNCTION
 
-
-// LOGIN
 
 function loginUser() {
+
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
 
@@ -94,9 +101,6 @@ function loginUser() {
         window.location.href = "index.html";
     }
 }
-
-
-
 
 
 
@@ -139,9 +143,6 @@ function loadCandidates() {
 
 
 
-
-
-
 // VOTE FUNCTION
 
 
@@ -163,11 +164,17 @@ function vote(id) {
     let candidates = JSON.parse(localStorage.getItem("candidates"));
 
     const candidate = candidates.find(c => c.id === id);
+
+    if (!candidate) {
+        alert("Candidate not found!");
+        return;
+    }
+
     candidate.votes += 1;
 
     localStorage.setItem("candidates", JSON.stringify(candidates));
 
-    // update user voted status
+    // Update user voted status
     let users = JSON.parse(localStorage.getItem("users"));
     const userIndex = users.findIndex(u => u.username === loggedUser.username);
 
@@ -183,38 +190,119 @@ function vote(id) {
 
 
 
-
-
-
-// LOAD RESULTS
+// LOAD RESULTS (RESULT PAGE)
 
 
 function loadResults() {
-    const container = document.getElementById("resultContainer");
 
-    if (!container) return;
+    const candidates = JSON.parse(localStorage.getItem("candidates")) || [];
+    const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    const candidates = JSON.parse(localStorage.getItem("candidates"));
+    const totalRegisteredVoters = users.length;
 
-    container.innerHTML = "";
+    let totalVotesCast = 0;
 
-    candidates.forEach(candidate => {
-        container.innerHTML += `
-            <div class="result-card">
-                <h3>${candidate.name}</h3>
-                <p>Votes: ${candidate.votes}</p>
-            </div>
+    let candidateHTML = "<table><tr><th>Name</th><th>Party</th><th>Votes</th><th>Percentage</th></tr>";
+
+    candidates.forEach(c => totalVotesCast += c.votes);
+
+    candidates.forEach(c => {
+
+        let percent = totalVotesCast > 0
+            ? ((c.votes / totalVotesCast) * 100).toFixed(2)
+            : 0;
+
+        candidateHTML += `
+            <tr>
+                <td>${c.name}</td>
+                <td>${c.party}</td>
+                <td>${c.votes}</td>
+                <td>
+                    ${percent}%
+                    <div class="progress-bar" style="width:${percent}%"></div>
+                </td>
+            </tr>
         `;
     });
+
+    candidateHTML += "</table>";
+
+    if (document.getElementById("candidateResults"))
+        document.getElementById("candidateResults").innerHTML = candidateHTML;
+
+    // Party Wise Totals
+    let partyTotals = {};
+
+    candidates.forEach(c => {
+        if (!partyTotals[c.party]) {
+            partyTotals[c.party] = 0;
+        }
+        partyTotals[c.party] += c.votes;
+    });
+
+    let partyHTML = "<table><tr><th>Party</th><th>Total Votes</th></tr>";
+
+    for (let party in partyTotals) {
+        partyHTML += `<tr><td>${party}</td><td>${partyTotals[party]}</td></tr>`;
+    }
+
+    partyHTML += "</table>";
+
+    if (document.getElementById("partyResults"))
+        document.getElementById("partyResults").innerHTML = partyHTML;
+
+    // Voter Statistics
+    let notVoted = totalRegisteredVoters - totalVotesCast;
+
+    let turnout = totalRegisteredVoters > 0
+        ? ((totalVotesCast / totalRegisteredVoters) * 100).toFixed(2)
+        : 0;
+
+    let statsHTML = `
+        <table>
+            <tr><th>Total Registered Voters</th><td>${totalRegisteredVoters}</td></tr>
+            <tr><th>Total Votes Cast</th><td>${totalVotesCast}</td></tr>
+            <tr><th>Not Voted</th><td>${notVoted}</td></tr>
+            <tr><th>Turnout Percentage</th><td>${turnout}%</td></tr>
+        </table>
+    `;
+
+    if (document.getElementById("voterStats"))
+        document.getElementById("voterStats").innerHTML = statsHTML;
+
+    // Winner Section
+    if (candidates.length > 0) {
+        let winner = candidates.reduce((prev, current) =>
+            (prev.votes > current.votes) ? prev : current
+        );
+
+        if (document.getElementById("winnerSection"))
+            document.getElementById("winnerSection").innerHTML =
+                `🏆 Winner: ${winner.name} (${winner.party}) with ${winner.votes} votes`;
+    }
 }
 
 
 
+// NAVIGATION
 
 
-// AUTO LOAD FUNCTIONS
+function goBackAdmin() {
+    window.location.href = "admin_dashboard.html";
+}
 
-document.addEventListener("DOMContentLoaded", function () {
-    loadCandidates();
-    loadResults();
-});
+
+
+// PAGE AUTO DETECTION
+
+window.onload = function () {
+
+    if (document.getElementById("candidateContainer")) {
+        loadCandidates();
+    }
+
+    if (document.getElementById("candidateResults")) {
+        loadResults();
+    }
+
+};
