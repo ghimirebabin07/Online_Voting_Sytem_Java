@@ -7,18 +7,31 @@
 </head>
 <body>
 
-    <div class="card">
-        <h2>Election Results</h2>
+<div class="card result-card">
 
-        <div id="resultContainer">
-            <!-- Results will load here -->
-        </div>
+    <h2>🏆 Election Results</h2>
 
-        <div class="button-group">
-            <button onclick="goBackAdmin()">Back to Dashboard</button>
-        </div>
+    <!-- Winner Section -->
+    <div id="winnerSection" class="winner-box"></div>
+
+    <!-- Candidate Results -->
+    <h3>Candidate Wise Results</h3>
+    <div id="candidateResults" class="result-table"></div>
+
+    <!-- Party Results -->
+    <h3>Party Wise Total Votes</h3>
+    <div id="partyResults" class="result-table"></div>
+
+    <!-- Voter Statistics -->
+    <h3>Voting Statistics</h3>
+    <div id="voterStats" class="result-table"></div>
+
+    <div class="button-group">
+        <button onclick="goBackAdmin()">Back to Dashboard</button>
     </div>
 
-    <script src="../js/script.js"></script>
+</div>
+
+<script src="../js/script.js"></script>
 </body>
 </html>
