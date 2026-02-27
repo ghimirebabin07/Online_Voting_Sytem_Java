@@ -34,6 +34,14 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Sobita.jpg",
             symbol: "../Images/RSP.jpg",
             votes: 0
+        },
+        {
+            id : 4,
+            name: "KP Sharma Oli",
+            party: "UML",
+            image: "../Images/Kp.jpg",
+            symbol: "../Images/UML.jpg",
+            votes: 0
         }
     ];
 
