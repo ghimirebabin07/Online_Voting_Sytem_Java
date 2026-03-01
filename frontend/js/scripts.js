@@ -7,7 +7,7 @@ if (!localStorage.getItem("users")) {
     localStorage.setItem("users", JSON.stringify([]));
 }
 
-// Initialize candidates if not exists
+// Initialize candidates if not exist 
 if (!localStorage.getItem("candidates")) {
 
     const candidates = [
