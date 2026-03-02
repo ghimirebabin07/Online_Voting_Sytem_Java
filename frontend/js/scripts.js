@@ -42,6 +42,15 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Kp.jpg",
             symbol: "../Images/UML.jpg",
             votes: 0
+
+        },
+        {
+            id : 5,
+            name: "Pushpa Kamal Dahal",
+            party: "Maoist Center",
+            image: "../Images/Puspa.jpg",
+            symbol: "../Images/Maoist.jpg",
+            votes: 0
         }
     ];
 
