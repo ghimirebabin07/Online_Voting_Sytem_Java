@@ -2,12 +2,10 @@
 // INITIAL SETUP (RUN ONLY ONCE)
 
 
-// Initialize users if not exists
 if (!localStorage.getItem("users")) {
     localStorage.setItem("users", JSON.stringify([]));
 }
 
-// Initialize candidates if not exist 
 if (!localStorage.getItem("candidates")) {
 
     const candidates = [
@@ -17,7 +15,8 @@ if (!localStorage.getItem("candidates")) {
             party: "Rastriya Swatantra Party",
             image: "../Images/Balen_.jpg",
             symbol: "../Images/RSP.jpg",
-            votes: 0
+            votes: 0,
+            description: "Focused on development, transparency and youth empowerment."
         },
         {
             id: 2,
@@ -25,7 +24,8 @@ if (!localStorage.getItem("candidates")) {
             party: "Rastriya Swatantra Party",
             image: "../Images/Rabi.jpg",
             symbol: "../Images/RSP.jpg",
-            votes: 0
+            votes: 0,
+            description: "Advocates anti-corruption reforms and governance transparency."
         },
         {
             id: 3,
@@ -33,24 +33,26 @@ if (!localStorage.getItem("candidates")) {
             party: "Rastriya Swatantra Party",
             image: "../Images/Sobita.jpg",
             symbol: "../Images/RSP.jpg",
-            votes: 0
+            votes: 0,
+            description: "Focused on women empowerment and policy reform."
         },
         {
-            id : 4,
+            id: 4,
             name: "KP Sharma Oli",
             party: "UML",
             image: "../Images/Kp.jpg",
             symbol: "../Images/UML.jpg",
-            votes: 0
-
+            votes: 0,
+            description: "Senior political leader focused on infrastructure and national development."
         },
         {
-            id : 5,
+            id: 5,
             name: "Pushpa Kamal Dahal",
             party: "Maoist Center",
             image: "../Images/Puspa.jpg",
             symbol: "../Images/Maoist.jpg",
-            votes: 0
+            votes: 0,
+            description: "Promotes social justice and democratic socialist reforms."
         }
     ];
 
@@ -59,7 +61,7 @@ if (!localStorage.getItem("candidates")) {
 
 
 
-// REGISTER FUNCTION
+// REGISTER
 
 
 function registerUser() {
@@ -69,16 +71,14 @@ function registerUser() {
 
     let users = JSON.parse(localStorage.getItem("users"));
 
-    const userExists = users.find(user => user.username === username);
-
-    if (userExists) {
+    if (users.find(user => user.username === username)) {
         alert("User already exists!");
         return;
     }
 
     users.push({
-        username: username,
-        password: password,
+        username,
+        password,
         role: "user",
         voted: false
     });
@@ -91,7 +91,7 @@ function registerUser() {
 
 
 
-// LOGIN FUNCTION
+// LOGIN
 
 
 function loginUser() {
@@ -115,7 +115,7 @@ function loginUser() {
     if (validUser.role === "admin") {
         window.location.href = "admin.html";
     } else {
-        window.location.href = "index.html";
+        window.location.href = "vote.html";
     }
 }
 
@@ -149,9 +149,15 @@ function loadCandidates() {
                     </div>
                 </div>
 
-                <button class="vote-btn" onclick="vote(${candidate.id})">
-                    Vote
-                </button>
+                <div class="btn-group">
+                    <button class="vote-btn" onclick="vote(${candidate.id})">
+                        Vote
+                    </button>
+
+                    <button class="details-btn" onclick="viewDetails(${candidate.id})">
+                        Details
+                    </button>
+                </div>
 
             </div>
         `;
@@ -160,7 +166,16 @@ function loadCandidates() {
 
 
 
-// VOTE FUNCTION
+// VIEW DETAILS
+
+
+function viewDetails(id) {
+    localStorage.setItem("selectedCandidateId", id);
+    window.location.href = "candidate-details.html";
+}
+
+
+// VOTE
 
 
 function vote(id) {
@@ -179,19 +194,11 @@ function vote(id) {
     }
 
     let candidates = JSON.parse(localStorage.getItem("candidates"));
-
     const candidate = candidates.find(c => c.id === id);
 
-    if (!candidate) {
-        alert("Candidate not found!");
-        return;
-    }
-
     candidate.votes += 1;
-
     localStorage.setItem("candidates", JSON.stringify(candidates));
 
-    // Update user voted status
     let users = JSON.parse(localStorage.getItem("users"));
     const userIndex = users.findIndex(u => u.username === loggedUser.username);
 
@@ -201,13 +208,12 @@ function vote(id) {
     localStorage.setItem("loggedInUser", JSON.stringify(users[userIndex]));
 
     alert("Vote Successful!");
-
     window.location.href = "result.html";
 }
 
 
 
-// LOAD RESULTS (RESULT PAGE)
+// LOAD RESULTS
 
 
 function loadResults() {
@@ -215,102 +221,37 @@ function loadResults() {
     const candidates = JSON.parse(localStorage.getItem("candidates")) || [];
     const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    const totalRegisteredVoters = users.length;
+    let totalVotes = 0;
+    candidates.forEach(c => totalVotes += c.votes);
 
-    let totalVotesCast = 0;
-
-    let candidateHTML = "<table><tr><th>Name</th><th>Party</th><th>Votes</th><th>Percentage</th></tr>";
-
-    candidates.forEach(c => totalVotesCast += c.votes);
+    let html = "<table><tr><th>Name</th><th>Party</th><th>Votes</th><th>%</th></tr>";
 
     candidates.forEach(c => {
 
-        let percent = totalVotesCast > 0
-            ? ((c.votes / totalVotesCast) * 100).toFixed(2)
+        let percent = totalVotes > 0
+            ? ((c.votes / totalVotes) * 100).toFixed(2)
             : 0;
 
-        candidateHTML += `
+        html += `
             <tr>
                 <td>${c.name}</td>
                 <td>${c.party}</td>
                 <td>${c.votes}</td>
-                <td>
-                    ${percent}%
-                    <div class="progress-bar" style="width:${percent}%"></div>
-                </td>
+                <td>${percent}%</td>
             </tr>
         `;
     });
 
-    candidateHTML += "</table>";
+    html += "</table>";
 
     if (document.getElementById("candidateResults"))
-        document.getElementById("candidateResults").innerHTML = candidateHTML;
-
-    // Party Wise Totals
-    let partyTotals = {};
-
-    candidates.forEach(c => {
-        if (!partyTotals[c.party]) {
-            partyTotals[c.party] = 0;
-        }
-        partyTotals[c.party] += c.votes;
-    });
-
-    let partyHTML = "<table><tr><th>Party</th><th>Total Votes</th></tr>";
-
-    for (let party in partyTotals) {
-        partyHTML += `<tr><td>${party}</td><td>${partyTotals[party]}</td></tr>`;
-    }
-
-    partyHTML += "</table>";
-
-    if (document.getElementById("partyResults"))
-        document.getElementById("partyResults").innerHTML = partyHTML;
-
-    // Voter Statistics
-    let notVoted = totalRegisteredVoters - totalVotesCast;
-
-    let turnout = totalRegisteredVoters > 0
-        ? ((totalVotesCast / totalRegisteredVoters) * 100).toFixed(2)
-        : 0;
-
-    let statsHTML = `
-        <table>
-            <tr><th>Total Registered Voters</th><td>${totalRegisteredVoters}</td></tr>
-            <tr><th>Total Votes Cast</th><td>${totalVotesCast}</td></tr>
-            <tr><th>Not Voted</th><td>${notVoted}</td></tr>
-            <tr><th>Turnout Percentage</th><td>${turnout}%</td></tr>
-        </table>
-    `;
-
-    if (document.getElementById("voterStats"))
-        document.getElementById("voterStats").innerHTML = statsHTML;
-
-    // Winner Section
-    if (candidates.length > 0) {
-        let winner = candidates.reduce((prev, current) =>
-            (prev.votes > current.votes) ? prev : current
-        );
-
-        if (document.getElementById("winnerSection"))
-            document.getElementById("winnerSection").innerHTML =
-                `🏆 Winner: ${winner.name} (${winner.party}) with ${winner.votes} votes`;
-    }
+        document.getElementById("candidateResults").innerHTML = html;
 }
 
 
 
-// NAVIGATION
+// AUTO PAGE DETECTION
 
-
-function goBackAdmin() {
-    window.location.href = "admin_dashboard.html";
-}
-
-
-
-// PAGE AUTO DETECTION
 
 window.onload = function () {
 
@@ -321,5 +262,4 @@ window.onload = function () {
     if (document.getElementById("candidateResults")) {
         loadResults();
     }
-
 };
