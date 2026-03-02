@@ -234,3 +234,46 @@ button:hover {
     background: #4CAF50;
     border-radius: 10px;
 }
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.details-btn {
+    background: #555;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.details-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    width: 400px;
+    margin: 20px auto;
+}
+
+.details-photo {
+    width: 150px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.details-symbol {
+    width: 80px;
+    margin: 10px 0;
+}
+
+.back-btn {
+    padding: 10px 20px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
