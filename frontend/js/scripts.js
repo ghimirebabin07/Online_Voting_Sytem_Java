@@ -34,7 +34,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Sobita.jpg",
             symbol: "../Images/RSP.jpg",
             votes: 0,
-            description: "Focused on women empowerment and policy reform."
+            description: "Well educated and focused on women empowerment and policy reform."
         },
         {
             id: 4,
