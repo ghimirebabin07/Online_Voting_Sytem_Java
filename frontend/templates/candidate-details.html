@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Candidate Details</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+<div class="main-container">
+
+    <h1 class="page-title">Candidate Details</h1>
+
+    <div id="candidateDetailsContainer"></div>
+
+    <button class="back-btn" onclick="goBack()">Back to Vote</button>
+
+</div>
+
+<script src="../js/scripts.js"></script>
+
+<script>
+function loadCandidateDetails() {
+
+    const id = localStorage.getItem("selectedCandidateId");
+    const candidates = JSON.parse(localStorage.getItem("candidates"));
+
+    const candidate = candidates.find(c => c.id == id);
+
+    const container = document.getElementById("candidateDetailsContainer");
+
+    container.innerHTML = `
+        <div class="details-card">
+            <img src="${candidate.image}" class="details-photo">
+            <h2>${candidate.name}</h2>
+            <img src="${candidate.symbol}" class="details-symbol">
+            <h3>${candidate.party}</h3>
+            <p>${candidate.description}</p>
+            <h4>Total Votes: ${candidate.votes}</h4>
+        </div>
+    `;
+}
+
+function goBack() {
+    window.location.href = "vote.html";
+}
+
+loadCandidateDetails();
+</script>
+
+</body>
+</html>
