@@ -25,7 +25,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Rabi.jpg",
             symbol: "../Images/RSP.jpg",
             votes: 0,
-            description: "Advocates anti-corruption reforms and governance transparency."
+            description: "Strong leadership and advocates anti-corruption reforms and governance transparency."
         },
         {
             id: 3,
