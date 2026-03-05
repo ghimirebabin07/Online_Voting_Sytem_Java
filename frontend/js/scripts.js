@@ -16,7 +16,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Balen_.jpg",
             symbol: "../Images/RSP.jpg",
             votes: 0,
-            description: "Focused on development, transparency and youth empowerment."
+            description: "Strong Engineering Background focused on development, transparency and youth empowerment."
         },
         {
             id: 2,
