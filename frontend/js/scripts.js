@@ -16,7 +16,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Balen_.jpg",
             symbol: "../Images/RSP.jpg",
             votes: 0,
-            description: "Focused on development, transparency and youth empowerment."
+            description: "Strong Engineering Background focused on development, transparency and youth empowerment."
         },
         {
             id: 2,
@@ -34,7 +34,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Sobita.jpg",
             symbol: "../Images/RSP.jpg",
             votes: 0,
-            description: "Well educated and focused on women empowerment and policy reform."
+            description: "Well educated and focused on women empowerment and policy reform with a commitment to social justice."
         },
         {
             id: 4,
