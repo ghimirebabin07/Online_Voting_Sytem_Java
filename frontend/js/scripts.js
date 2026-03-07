@@ -16,7 +16,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Balen_.jpg",
             symbol: "../Images/RSP.jpg",
             votes: 0,
-            description: "Strong Engineering Background focused on development, transparency and youth empowerment."
+            description: "Strong Engineering Background focused on development, transparency and youth empowerment and the future PM."
         },
         {
             id: 2,
