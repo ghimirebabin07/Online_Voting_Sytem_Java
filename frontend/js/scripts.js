@@ -52,7 +52,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Puspa.jpg",
             symbol: "../Images/Maoist.jpg",
             votes: 0,
-            description: "Promotes social justice and democratic socialist reforms."
+            description: "Promotes social justice and democratic socialist reforms and build it ."
         }
     ];
 
