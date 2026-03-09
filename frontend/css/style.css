@@ -209,7 +209,7 @@ button:hover {
 }
 
 .result-table th, .result-table td {
-    border: 1px solid #ddd;
+    border: 1px solid #dd6b6b;
     padding: 10px;
     text-align: center;
 }
