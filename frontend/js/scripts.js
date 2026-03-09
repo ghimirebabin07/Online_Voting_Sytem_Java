@@ -53,6 +53,15 @@ if (!localStorage.getItem("candidates")) {
             symbol: "../Images/Maoist.jpg",
             votes: 0,
             description: "Promotes social justice and democratic socialist reforms and build it ."
+        },
+        {
+            id: 6,
+            name: "Sher Bahadur Deuba",
+            party: "Congress",
+            image: "../Images/Sher.jpg",
+            symbol: "../Images/Congress.jpg",
+            votes: 0,
+            description: "Experienced politician focused on national development and governance reforms."
         }
     ];
 
