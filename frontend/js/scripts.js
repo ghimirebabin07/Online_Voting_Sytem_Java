@@ -61,7 +61,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Sher.jpg",
             symbol: "../Images/Congress.jpg",
             votes: 0,
-            description: "Experienced politician focused on national development and governance reforms."
+            description: "Experienced over 35 yrs  politician focused on national development and governance reforms."
         }
     ];
 
