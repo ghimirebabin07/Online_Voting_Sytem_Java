@@ -272,3 +272,22 @@ window.onload = function () {
         loadResults();
     }
 };
+function goVote(){
+window.location.href = "vote.html";
+}
+
+function viewResults(){
+window.location.href = "result.html";
+}
+
+function viewCandidates(){
+window.location.href = "candidate-details.html";
+}
+
+function logout(){
+
+if(confirm("Are you sure you want to logout?")){
+window.location.href = "login.html";
+}
+
+}
