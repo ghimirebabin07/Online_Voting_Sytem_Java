@@ -277,3 +277,102 @@ button:hover {
     border-radius: 6px;
     cursor: pointer;
 }
+/* NAVBAR */
+.navbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:linear-gradient(90deg,#6c0849,#93d9c1);
+    padding:16px 40px;
+    box-shadow:0 2px 8px rgba(192, 99, 99, 0.1);
+}
+
+.logo{
+    color:rgb(236, 227, 227);
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+.nav-links{
+    display:flex;
+    list-style:none;
+}
+
+.nav-links li{
+    margin-left:30px;
+}
+
+.nav-links a{
+    color:rgb(247, 244, 244);
+    text-decoration:none;
+    font-size:15px;
+    font-weight:500;
+    transition:0.3s;
+}
+
+.nav-links a:hover{
+    opacity:0.8;
+}
+
+/* DASHBOARD */
+.dashboard-container{
+    padding:50px;
+    text-align:center;
+}
+
+.dashboard-container h1{
+    color:#0f0e0e;
+    margin-bottom:10px;
+}
+
+.dashboard-cards{
+    display:flex;
+    justify-content:center;
+    gap:35px;
+    margin-top:40px;
+    flex-wrap:wrap;
+}
+
+/* CARD DESIGN */
+.card{
+    width:260px;
+    padding:30px 25px;
+    border-radius:12px;
+    background:white;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    transition:all 0.3s ease;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 15px 30px rgba(0,0,0,0.15);
+}
+
+.card h2{
+    margin-bottom:10px;
+    color:#333;
+}
+
+.card p{
+    color:#666;
+    font-size:14px;
+}
+
+/* BUTTON */
+.card button{
+    margin-top:18px;
+    padding:10px 22px;
+    border:none;
+    background:#5535bf;
+    color:white;
+    border-radius:6px;
+    font-size:14px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.card button:hover{
+    background:#194488;
+    transform:scale(1.05);
+}
