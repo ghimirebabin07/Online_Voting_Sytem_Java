@@ -256,11 +256,7 @@ function loadResults() {
     if (document.getElementById("candidateResults"))
         document.getElementById("candidateResults").innerHTML = html;
 }
-
-
-
-// AUTO PAGE DETECTION
-
+// auto page detection 
 
 window.onload = function () {
 
