@@ -1,61 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Voting Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Voting Dashboard</title>
 
-<link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
 
-</head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">Online Voting</div>
 
-<body>
-<nav class="navbar">
-    <div class="logo">Online Voting</div>
-
-    <ul class="nav-links">
+      <ul class="nav-links">
         <li><a href="dashboard.html">Dashboard</a></li>
         <li><a href="vote.html">Vote</a></li>
         <li><a href="result.html">Results</a></li>
         <li><a href="candidate-details.html">Candidates</a></li>
         <li><a href="#" onclick="logout()">Logout</a></li>
-    </ul>
-</nav>
+      </ul>
+    </nav>
+    <div class="dashboard-container">
+      <h1>Welcome to the Voting Dashboard</h1>
+      <p>Select an option below</p>
 
-
-<!-- DASHBOARD -->
-
-<div class="dashboard-container">
-
-    <h1>Welcome to the Voting Dashboard</h1>
-    <p>Select an option below</p>
-
-
-    <div class="dashboard-cards">
-
+      <div class="dashboard-cards">
         <div class="card">
-            <h2>Vote Now</h2>
-            <p>Cast your vote for your candidate.</p>
-            <button onclick="goVote()">Go to Vote</button>
+          <h2>Vote Now</h2>
+          <p>Cast your vote for your candidate.</p>
+          <button onclick="goVote()">Go to Vote</button>
         </div>
 
         <div class="card">
-            <h2>View Results</h2>
-            <p>Check the current election results.</p>
-            <button onclick="viewResults()">View Results</button>
+          <h2>View Results</h2>
+          <p>Check the current election results.</p>
+          <button onclick="viewResults()">View Results</button>
         </div>
 
         <div class="card">
-            <h2>Candidates</h2>
-            <p>See all election candidates.</p>
-            <button onclick="viewCandidates()">View Candidates</button>
+          <h2>Candidates</h2>
+          <p>See all election candidates.</p>
+          <button onclick="viewCandidates()">View Candidates</button>
         </div>
-
+      </div>
     </div>
 
-</div>
-
-
-<script src="../js/scripts.js"></script>
-
-</body>
+    <script src="../js/scripts.js"></script>
+  </body>
 </html>
