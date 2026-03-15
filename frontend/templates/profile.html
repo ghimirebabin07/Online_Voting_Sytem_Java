@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<title>User Profile</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+<div class="logo">Online Voting</div>
+
+<ul class="nav-links">
+<li><a href="dashboard.html">Dashboard</a></li>
+<li><a href="vote.html">Vote</a></li>
+<li><a href="result.html">Results</a></li>
+<li><a href="profile.html">Profile</a></li>
+<li><a href="#" onclick="logout()">Logout</a></li>
+</ul>
+
+</nav>
+
+
+<!-- PROFILE SECTION -->
+
+<div class="profile-container">
+
+<div class="profile-card">
+
+<img src="../Images/Profile.jpg" class="profile-img">
+
+<h2 id="userName">User Name</h2>
+
+<p><strong>Email:</strong> <span id="userEmail"></span></p>
+
+<p><strong>Voter ID:</strong> <span id="voterId"></span></p>
+
+<p><strong>Voting Status:</strong> <span id="voteStatus"></span></p>
+
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+</div>
+
+</div>
+
+<script src="../js/scripts.js"></script>
+
+</body>
+</html>

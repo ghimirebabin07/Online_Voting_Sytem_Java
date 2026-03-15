@@ -1,6 +1,6 @@
-
+// =============================
 // INITIAL SETUP (RUN ONLY ONCE)
-
+// =============================
 
 if (!localStorage.getItem("users")) {
     localStorage.setItem("users", JSON.stringify([]));
@@ -16,7 +16,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Balen_.jpg",
             symbol: "../Images/RSP.jpg",
             votes: 0,
-            description: "Strong Engineering Background focused on development, transparency and youth empowerment and the future PM."
+            description: "Strong Engineering Background focused on development and transparency."
         },
         {
             id: 2,
@@ -25,7 +25,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Rabi.jpg",
             symbol: "../Images/RSP.jpg",
             votes: 0,
-            description: "Strong leadership and advocates anti-corruption reforms and governance transparency."
+            description: "Advocates anti-corruption reforms and governance transparency."
         },
         {
             id: 3,
@@ -34,7 +34,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Sobita.jpg",
             symbol: "../Images/RSP.jpg",
             votes: 0,
-            description: "Well educated and focused on women empowerment and policy reform with a commitment to social justice."
+            description: "Focused on women empowerment and policy reform."
         },
         {
             id: 4,
@@ -43,7 +43,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Kp.jpg",
             symbol: "../Images/UML.jpg",
             votes: 0,
-            description: "Senior political leader focused on infrastructure and national development."
+            description: "Focused on infrastructure and national development."
         },
         {
             id: 5,
@@ -52,7 +52,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Puspa.jpg",
             symbol: "../Images/Maoist.jpg",
             votes: 0,
-            description: "Promotes social justice and democratic socialist reforms and build it ."
+            description: "Promotes social justice and democratic reforms."
         },
         {
             id: 6,
@@ -61,7 +61,7 @@ if (!localStorage.getItem("candidates")) {
             image: "../Images/Sher.jpg",
             symbol: "../Images/Congress.jpg",
             votes: 0,
-            description: "Experienced over 35 yrs  politician focused on national development and governance reforms."
+            description: "Experienced politician focused on governance reforms."
         }
     ];
 
@@ -69,9 +69,9 @@ if (!localStorage.getItem("candidates")) {
 }
 
 
-
-// REGISTER
-
+// =============================
+// REGISTER USER
+// =============================
 
 function registerUser() {
 
@@ -99,9 +99,9 @@ function registerUser() {
 }
 
 
-
-// LOGIN PAge 
-
+// =============================
+// LOGIN
+// =============================
 
 function loginUser() {
 
@@ -124,14 +124,14 @@ function loginUser() {
     if (validUser.role === "admin") {
         window.location.href = "admin.html";
     } else {
-        window.location.href = "vote.html";
+        window.location.href = "dashboard.html";
     }
 }
 
 
-
+// =============================
 // LOAD CANDIDATES (VOTE PAGE)
-
+// =============================
 
 function loadCandidates() {
 
@@ -145,38 +145,42 @@ function loadCandidates() {
     candidates.forEach(candidate => {
 
         container.innerHTML += `
-            <div class="candidate-row">
+        <div class="candidate-row">
 
-                <img class="party-symbol" src="${candidate.symbol}" alt="symbol">
+            <img class="party-symbol" src="${candidate.symbol}" alt="symbol">
 
-                <div class="candidate-info">
-                    <img class="candidate-photo" src="${candidate.image}" alt="${candidate.name}">
-                    
-                    <div class="candidate-details">
-                        <h3>${candidate.name}</h3>
-                        <p>${candidate.party}</p>
-                    </div>
-                </div>
+            <div class="candidate-info">
 
-                <div class="btn-group">
-                    <button class="vote-btn" onclick="vote(${candidate.id})">
-                        Vote
-                    </button>
+                <img class="candidate-photo" src="${candidate.image}" alt="${candidate.name}">
 
-                    <button class="details-btn" onclick="viewDetails(${candidate.id})">
-                        Details
-                    </button>
+                <div class="candidate-details">
+                    <h3>${candidate.name}</h3>
+                    <p>${candidate.party}</p>
                 </div>
 
             </div>
+
+            <div class="btn-group">
+
+                <button class="vote-btn" onclick="vote(${candidate.id})">
+                    Vote
+                </button>
+
+                <button class="details-btn" onclick="viewDetails(${candidate.id})">
+                    Details
+                </button>
+
+            </div>
+
+        </div>
         `;
     });
 }
 
 
-
-// VIEW DETAILS
-
+// =============================
+// VIEW CANDIDATE DETAILS
+// =============================
 
 function viewDetails(id) {
     localStorage.setItem("selectedCandidateId", id);
@@ -184,8 +188,9 @@ function viewDetails(id) {
 }
 
 
-// VOTE
-
+// =============================
+// VOTE FUNCTION
+// =============================
 
 function vote(id) {
 
@@ -203,34 +208,39 @@ function vote(id) {
     }
 
     let candidates = JSON.parse(localStorage.getItem("candidates"));
+
     const candidate = candidates.find(c => c.id === id);
 
     candidate.votes += 1;
+
     localStorage.setItem("candidates", JSON.stringify(candidates));
 
     let users = JSON.parse(localStorage.getItem("users"));
+
     const userIndex = users.findIndex(u => u.username === loggedUser.username);
 
     users[userIndex].voted = true;
 
     localStorage.setItem("users", JSON.stringify(users));
+
     localStorage.setItem("loggedInUser", JSON.stringify(users[userIndex]));
 
     alert("Vote Successful!");
+
     window.location.href = "result.html";
 }
 
 
-
+// =============================
 // LOAD RESULTS
-
+// =============================
 
 function loadResults() {
 
     const candidates = JSON.parse(localStorage.getItem("candidates")) || [];
-    const users = JSON.parse(localStorage.getItem("users")) || [];
 
     let totalVotes = 0;
+
     candidates.forEach(c => totalVotes += c.votes);
 
     let html = "<table><tr><th>Name</th><th>Party</th><th>Votes</th><th>%</th></tr>";
@@ -242,21 +252,60 @@ function loadResults() {
             : 0;
 
         html += `
-            <tr>
-                <td>${c.name}</td>
-                <td>${c.party}</td>
-                <td>${c.votes}</td>
-                <td>${percent}%</td>
-            </tr>
+        <tr>
+            <td>${c.name}</td>
+            <td>${c.party}</td>
+            <td>${c.votes}</td>
+            <td>${percent}%</td>
+        </tr>
         `;
     });
 
     html += "</table>";
 
-    if (document.getElementById("candidateResults"))
-        document.getElementById("candidateResults").innerHTML = html;
+    const resultContainer = document.getElementById("candidateResults");
+
+    if (resultContainer) {
+        resultContainer.innerHTML = html;
+    }
 }
-// auto page detection 
+
+
+// =============================
+// PROFILE PAGE
+// =============================
+
+function loadProfile(){
+
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if(!user){
+        window.location.href="login.html";
+        return;
+    }
+
+    document.getElementById("userName").innerText = user.username;
+
+    if(document.getElementById("userEmail")){
+        document.getElementById("userEmail").innerText = user.email || "Not Provided";
+    }
+
+    if(document.getElementById("voterId")){
+        document.getElementById("voterId").innerText = "VOTE-" + user.username;
+    }
+
+    if(user.voted){
+        document.getElementById("voteStatus").innerText = "Completed ✅";
+    }else{
+        document.getElementById("voteStatus").innerText = "Not Voted ❌";
+    }
+
+}
+
+
+// =============================
+// AUTO PAGE DETECTION
+// =============================
 
 window.onload = function () {
 
@@ -267,23 +316,43 @@ window.onload = function () {
     if (document.getElementById("candidateResults")) {
         loadResults();
     }
+
+    if (document.getElementById("userName")) {
+        loadProfile();
+    }
+
 };
+
+
+// =============================
+// DASHBOARD BUTTONS
+// =============================
+
 function goVote(){
-window.location.href = "vote.html";
+    window.location.href = "vote.html";
 }
 
 function viewResults(){
-window.location.href = "result.html";
+    window.location.href = "result.html";
 }
 
 function viewCandidates(){
-window.location.href = "candidate-details.html";
+    window.location.href = "candidate-details.html";
 }
+
+
+// =============================
+// LOGOUT
+// =============================
 
 function logout(){
 
-if(confirm("Are you sure you want to logout?")){
-window.location.href = "login.html";
-}
+    if(confirm("Are you sure you want to logout?")){
+
+        localStorage.removeItem("loggedInUser");
+
+        window.location.href="login.html";
+
+    }
 
 }

@@ -375,3 +375,58 @@ button:hover {
     background:#194488;
     transform:scale(1.05);
 }
+/* PROFILE PAGE */
+
+.profile-container{
+
+display:flex;
+justify-content:center;
+align-items:center;
+margin-top:80px;
+
+}
+
+.profile-card{
+
+width:350px;
+background:white;
+padding:30px;
+border-radius:12px;
+text-align:center;
+box-shadow:0 5px 15px rgba(0,0,0,0.15);
+
+}
+
+.profile-img{
+
+width:120px;
+height:120px;
+border-radius:50%;
+margin-bottom:15px;
+
+}
+
+.profile-card p{
+
+margin:10px 0;
+font-size:16px;
+
+}
+
+.logout-btn{
+
+margin-top:20px;
+padding:10px 20px;
+border:none;
+background:#e74a3b;
+color:white;
+border-radius:6px;
+cursor:pointer;
+
+}
+
+.logout-btn:hover{
+
+background:#c0392b;
+
+} 
