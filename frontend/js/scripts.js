@@ -69,9 +69,7 @@ if (!localStorage.getItem("candidates")) {
 }
 
 
-// =============================
 // REGISTER USER
-// =============================
 
 function registerUser() {
 
