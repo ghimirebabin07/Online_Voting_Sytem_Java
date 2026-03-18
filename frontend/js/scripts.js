@@ -97,9 +97,7 @@ function registerUser() {
 }
 
 
-// =============================
-// LOGIN
-// =============================
+// LOGIN USER 
 
 function loginUser() {
 
@@ -339,18 +337,4 @@ function viewCandidates(){
 }
 
 
-// =============================
-// LOGOUT
-// =============================
-
-function logout(){
-
-    if(confirm("Are you sure you want to logout?")){
-
-        localStorage.removeItem("loggedInUser");
-
-        window.location.href="login.html";
-
-    }
-
-}
+// LOGOUT i will perform this tomorrow 
