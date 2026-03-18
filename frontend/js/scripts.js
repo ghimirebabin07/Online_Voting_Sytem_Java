@@ -97,9 +97,7 @@ function registerUser() {
 }
 
 
-// =============================
-// LOGIN
-// =============================
+// LOGIN USER 
 
 function loginUser() {
 
