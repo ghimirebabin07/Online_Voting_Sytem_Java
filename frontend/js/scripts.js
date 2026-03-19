@@ -298,28 +298,6 @@ function loadProfile(){
 
 }
 
-
-// =============================
-// AUTO PAGE DETECTION
-// =============================
-
-window.onload = function () {
-
-    if (document.getElementById("candidateContainer")) {
-        loadCandidates();
-    }
-
-    if (document.getElementById("candidateResults")) {
-        loadResults();
-    }
-
-    if (document.getElementById("userName")) {
-        loadProfile();
-    }
-
-};
-
-
 // =============================
 // DASHBOARD BUTTONS
 // =============================
