@@ -299,9 +299,21 @@ function loadProfile(){
 }
 
 
-// =============================
+
+// LOGOUT 
+function logout(){
+
+    if(confirm("Are you sure you want to logout?")){
+
+        localStorage.removeItem("loggedInUser");
+
+        window.location.href="login.html";
+
+    }
+
+}
 // AUTO PAGE DETECTION
-// =============================
+
 
 window.onload = function () {
 
@@ -318,34 +330,3 @@ window.onload = function () {
     }
 
 };
-
-
-// =============================
-// DASHBOARD BUTTONS
-// =============================
-
-function goVote(){
-    window.location.href = "vote.html";
-}
-
-function viewResults(){
-    window.location.href = "result.html";
-}
-
-function viewCandidates(){
-    window.location.href = "candidate-details.html";
-}
-
-
-// LOGOUT 
-function logout(){
-
-    if(confirm("Are you sure you want to logout?")){
-
-        localStorage.removeItem("loggedInUser");
-
-        window.location.href="login.html";
-
-    }
-
-}
