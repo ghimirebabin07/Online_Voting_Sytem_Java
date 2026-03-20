@@ -298,21 +298,6 @@ function loadProfile(){
 
 }
 
-// =============================
-// DASHBOARD BUTTONS
-// =============================
-
-function goVote(){
-    window.location.href = "vote.html";
-}
-
-function viewResults(){
-    window.location.href = "result.html";
-}
-
-function viewCandidates(){
-    window.location.href = "candidate-details.html";
-}
 
 
 // LOGOUT 
