@@ -1,6 +1,6 @@
-
-// INITIAL SETUP (RUN ONLY ONCE)
-
+// =============================
+// INITIAL SETUP (RUN ONCE)
+// =============================
 
 if (!localStorage.getItem("users")) {
     localStorage.setItem("users", JSON.stringify([]));
@@ -68,17 +68,23 @@ if (!localStorage.getItem("candidates")) {
     localStorage.setItem("candidates", JSON.stringify(candidates));
 }
 
-
-// REGISTER USER
+// =============================
+// REGISTER
+// =============================
 
 function registerUser() {
 
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    let users = JSON.parse(localStorage.getItem("users"));
+    if (!username || !password) {
+        alert("Please fill all fields!");
+        return;
+    }
 
-    if (users.find(user => user.username === username)) {
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    if (users.find(u => u.username === username)) {
         alert("User already exists!");
         return;
     }
@@ -86,7 +92,6 @@ function registerUser() {
     users.push({
         username,
         password,
-        role: "user",
         voted: false
     });
 
@@ -96,37 +101,43 @@ function registerUser() {
     window.location.href = "login.html";
 }
 
-
-// LOGIN USER 
+// =============================
+// LOGIN
+// =============================
 
 function loginUser() {
 
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    let users = JSON.parse(localStorage.getItem("users"));
+    let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    const validUser = users.find(
-        user => user.username === username && user.password === password
-    );
-
-    if (!validUser) {
-        alert("Invalid credentials!");
+    if (users.length === 0) {
+        alert("No users found! Please register first.");
         return;
     }
 
-    localStorage.setItem("loggedInUser", JSON.stringify(validUser));
+    const user = users.find(
+        u => u.username === username && u.password === password
+    );
 
-    if (validUser.role === "admin") {
-        window.location.href = "admin.html";
-    } else {
-        window.location.href = "dashboard.html";
+    if (!user) {
+        alert("Invalid username or password!");
+        return;
     }
+
+    localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+    alert("Login Successful!");
+
+
+    setTimeout(() => {
+        window.location.href = "dashboard.html";
+    }, 300);
 }
 
-
 // =============================
-// LOAD CANDIDATES (VOTE PAGE)
+// LOAD CANDIDATES
 // =============================
 
 function loadCandidates() {
@@ -143,29 +154,19 @@ function loadCandidates() {
         container.innerHTML += `
         <div class="candidate-row">
 
-            <img class="party-symbol" src="${candidate.symbol}" alt="symbol">
+            <img class="party-symbol" src="${candidate.symbol}">
 
             <div class="candidate-info">
-
-                <img class="candidate-photo" src="${candidate.image}" alt="${candidate.name}">
-
-                <div class="candidate-details">
+                <img class="candidate-photo" src="${candidate.image}">
+                <div>
                     <h3>${candidate.name}</h3>
                     <p>${candidate.party}</p>
                 </div>
-
             </div>
 
             <div class="btn-group">
-
-                <button class="vote-btn" onclick="vote(${candidate.id})">
-                    Vote
-                </button>
-
-                <button class="details-btn" onclick="viewDetails(${candidate.id})">
-                    Details
-                </button>
-
+                <button class="vote-btn" onclick="vote(${candidate.id})">Vote</button>
+                <button class="details-btn" onclick="viewDetails(${candidate.id})">Details</button>
             </div>
 
         </div>
@@ -173,9 +174,8 @@ function loadCandidates() {
     });
 }
 
-
 // =============================
-// VIEW CANDIDATE DETAILS
+// DETAILS PAGE
 // =============================
 
 function viewDetails(id) {
@@ -183,42 +183,61 @@ function viewDetails(id) {
     window.location.href = "candidate-details.html";
 }
 
+function loadCandidateDetails() {
+
+    const id = localStorage.getItem("selectedCandidateId");
+    if (!id) return;
+
+    const candidates = JSON.parse(localStorage.getItem("candidates"));
+
+    const candidate = candidates.find(c => c.id == id);
+
+    if (!candidate) return;
+
+    document.getElementById("detailName").innerText = candidate.name;
+    document.getElementById("detailParty").innerText = candidate.party;
+    document.getElementById("detailDesc").innerText = candidate.description;
+
+    document.getElementById("detailImage").src = candidate.image;
+    document.getElementById("detailSymbol").src = candidate.symbol;
+}
 
 // =============================
-// VOTE FUNCTION
+// VOTE SYSTEM
 // =============================
 
 function vote(id) {
 
-    let loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    let user = JSON.parse(localStorage.getItem("loggedInUser"));
 
-    if (!loggedUser) {
+    if (!user) {
         alert("Please login first!");
         window.location.href = "login.html";
         return;
     }
 
-    if (loggedUser.voted) {
-        alert("You have already voted!");
+    if (user.voted) {
+        alert("You already voted!");
         return;
     }
 
     let candidates = JSON.parse(localStorage.getItem("candidates"));
 
-    const candidate = candidates.find(c => c.id === id);
+    const index = candidates.findIndex(c => c.id === id);
 
-    candidate.votes += 1;
+    if (index === -1) return;
+
+    candidates[index].votes += 1;
 
     localStorage.setItem("candidates", JSON.stringify(candidates));
 
     let users = JSON.parse(localStorage.getItem("users"));
 
-    const userIndex = users.findIndex(u => u.username === loggedUser.username);
+    const userIndex = users.findIndex(u => u.username === user.username);
 
     users[userIndex].voted = true;
 
     localStorage.setItem("users", JSON.stringify(users));
-
     localStorage.setItem("loggedInUser", JSON.stringify(users[userIndex]));
 
     alert("Vote Successful!");
@@ -226,26 +245,32 @@ function vote(id) {
     window.location.href = "result.html";
 }
 
-
 // =============================
-// LOAD RESULTS
+// RESULTS
 // =============================
 
 function loadResults() {
 
-    const candidates = JSON.parse(localStorage.getItem("candidates")) || [];
+    const container = document.getElementById("candidateResults");
+    if (!container) return;
 
-    let totalVotes = 0;
+    const candidates = JSON.parse(localStorage.getItem("candidates"));
 
-    candidates.forEach(c => totalVotes += c.votes);
+    let total = candidates.reduce((sum, c) => sum + c.votes, 0);
 
-    let html = "<table><tr><th>Name</th><th>Party</th><th>Votes</th><th>%</th></tr>";
+    let html = `
+    <table>
+    <tr>
+        <th>Name</th>
+        <th>Party</th>
+        <th>Votes</th>
+        <th>%</th>
+    </tr>
+    `;
 
     candidates.forEach(c => {
 
-        let percent = totalVotes > 0
-            ? ((c.votes / totalVotes) * 100).toFixed(2)
-            : 0;
+        let percent = total ? ((c.votes / total) * 100).toFixed(2) : 0;
 
         html += `
         <tr>
@@ -259,92 +284,76 @@ function loadResults() {
 
     html += "</table>";
 
-    const resultContainer = document.getElementById("candidateResults");
-
-    if (resultContainer) {
-        resultContainer.innerHTML = html;
-    }
+    container.innerHTML = html;
 }
 
-
 // =============================
-// PROFILE PAGE
+// PROFILE
 // =============================
 
-function loadProfile(){
+function loadProfile() {
 
     const user = JSON.parse(localStorage.getItem("loggedInUser"));
 
-    if(!user){
-        window.location.href="login.html";
+    if (!user) {
+        window.location.href = "login.html";
         return;
     }
 
     document.getElementById("userName").innerText = user.username;
 
-    if(document.getElementById("userEmail")){
-        document.getElementById("userEmail").innerText = user.email || "Not Provided";
-    }
-
-    if(document.getElementById("voterId")){
-        document.getElementById("voterId").innerText = "VOTE-" + user.username;
-    }
-
-    if(user.voted){
-        document.getElementById("voteStatus").innerText = "Completed ✅";
-    }else{
-        document.getElementById("voteStatus").innerText = "Not Voted ❌";
-    }
-
+    document.getElementById("voteStatus").innerText =
+        user.voted ? "Completed ✅" : "Not Voted ❌";
 }
 
-// DASHBOARD BUTTONS
+// =============================
+// NAVIGATION
+// =============================
 
-function goVote(){
+function goVote() {
     window.location.href = "vote.html";
 }
 
-function viewResults(){
+function viewResults() {
     window.location.href = "result.html";
 }
 
-function viewCandidates(){
-    window.location.href = "candidate-details.html";
-
+function logout() {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "login.html";
 }
 
+// =============================
+// DARK MODE
+// =============================
 
-// LOGOUT 
-function logout(){
+function toggleTheme() {
+    document.body.classList.toggle("dark");
 
-    if(confirm("Are you sure you want to logout?")){
+    let btn = document.getElementById("themeBtn");
 
-        localStorage.removeItem("loggedInUser");
-
-        window.location.href="login.html";
-
+    if (document.body.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
+        if (btn) btn.innerText = "☀️";
+    } else {
+        localStorage.setItem("theme", "light");
+        if (btn) btn.innerText = "🌙";
     }
-
 }
-// AUTO PAGE DETECTION
 
+// =============================
+// AUTO LOAD
+// =============================
 
 window.onload = function () {
 
-    if (document.getElementById("candidateContainer")) {
-        loadCandidates();
+    // DARK MODE LOAD
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
     }
 
-    if (document.getElementById("candidateResults")) {
-        loadResults();
-    }
-
-    if (document.getElementById("userName")) {
-        loadProfile();
-    }
-
+    loadCandidates();
+    loadResults();
+    loadProfile();
+    loadCandidateDetails();
 };
-//  DARK MODE
-function toggleTheme() {
-  document.body.classList.toggle("dark");
-}

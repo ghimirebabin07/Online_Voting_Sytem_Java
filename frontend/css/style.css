@@ -1,20 +1,87 @@
-/*  GLOBALS  */
-
+/* ================= GLOBAL ================= */
 * {
-    margin: 1;
+    margin: 0; /* FIXED (was 1 ❌) */
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: 'times new roman', serif;
+    transition: background 0.3s, color 0.3s;
 }
 
 body {
     min-height: 100vh;
     background: linear-gradient(135deg, #4e73df, #2defa8);
+    color: #222;
 }
 
+/* ================= DARK MODE ================= */
+.dark {
+    background: #121212 !important;
+    color: #ffffff !important;
+}
 
-/*  CENTER CARD PAGES (LOGIN / REGISTER / DASHBOARD) */
+/* Fix ALL text visibility in dark mode */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark p,
+.dark span,
+.dark label {
+    color: #ffffff !important;
+}
 
+/* ================= NAVBAR ================= */
+.navbar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:linear-gradient(90deg,#6c0849,#93d9c1);
+    padding:16px 40px;
+}
+
+.dark .navbar {
+    background: #1e1e2f;
+}
+
+.logo {
+    color:white;
+    font-size:22px;
+    font-weight:700;
+}
+
+.nav-links {
+    display:flex;
+    list-style:none;
+}
+
+.nav-links li {
+    margin-left:30px;
+}
+
+.nav-links a {
+    color:white;
+    text-decoration:none;
+}
+
+.nav-links a:hover {
+    color:#4CAF50;
+}
+
+/* ================= DARK MODE BUTTON ================= */
+.theme-btn {
+    position: fixed;
+    top: 65px;
+    left: 15px;
+    padding: 5px 10px;  
+    font-size: 14px;
+    border-radius: 6px;
+    background: #c8cbc8;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width:auto;
+}
+
+/* ================= CENTER CARD ================= */
 .center-page {
     display: flex;
     justify-content: center;
@@ -23,104 +90,72 @@ body {
 
 .card {
     background: #ffffff;
-    padding: 35px 30px;
+    padding: 30px;
     width: 350px;
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     text-align: center;
 }
 
-.card h1,
-.card h2 {
-    margin-bottom: 20px;
-    color: #333;
+.dark .card {
+    background: #1f1f1f;
 }
 
-.button-group {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
+/* ================= BUTTON ================= */
 button {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     border: none;
-    border-radius: 6px;
-    background-color: #4e73df;
+    background: linear-gradient(45deg,#6a5acd,#836fff);
     color: white;
-    font-size: 16px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: 0.3s ease;
 }
 
 button:hover {
-    background-color: #2e59d9;
+    transform: scale(1.05);
 }
 
-.form-group {
-    text-align: left;
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    font-size: 14px;
-    margin-bottom: 5px;
-    display: block;
-    color: #444;
-}
-
+/* ================= FORM ================= */
 .form-group input {
     width: 100%;
     padding: 10px;
     border-radius: 6px;
     border: 1px solid #ccc;
-    font-size: 14px;
 }
 
-.form-group input:focus {
-    border-color: #4e73df;
-    outline: none;
+.dark .form-group input {
+    background: #2a2a2a;
+    color: white;
+    border: 1px solid #555;
 }
 
-.link-text {
-    margin-top: 15px;
-    font-size: 14px;
+/* ================= DASHBOARD ================= */
+.dashboard-container {
+    padding:50px;
+    text-align:center;
 }
 
-.link-text a {
-    color: #4e73df;
-    text-decoration: none;
-    font-weight: bold;
+.dashboard-cards {
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    flex-wrap:wrap;
 }
 
-.link-text a:hover {
-    text-decoration: underline;
+.dashboard-card {
+    padding:20px;
+    border-radius:12px;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    min-width:150px;
 }
 
-
-/*  VOTE PAGE  */
-.page-title {
-    animation: fadeIn 1s ease-in-out;
-}
-/* Page Title Styling */
-.page-title {
-    font-size: 38px;
-    font-weight: 700;
-    text-align: center;
-    color: rgb(234, 240, 227);
-
-    padding: 50px 0 30px 0; /* controls spacing */
-    margin-bottom: 20px;
-
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+.dark .dashboard-card {
+    background: rgba(255,255,255,0.08);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+/* ================= VOTE PAGE (RESTORED ORIGINAL) ================= */
+
 .candidate-row {
     display: grid;
     grid-template-columns: 80px 1fr 150px;
@@ -133,6 +168,10 @@ button:hover {
     gap: 20px;
 }
 
+/* DARK MODE FIX (ONLY COLOR CHANGE, NO LAYOUT CHANGE) */
+.dark .candidate-row {
+    background: #1f1f1f;
+}
 
 /* Party Symbol */
 .party-symbol {
@@ -141,13 +180,12 @@ button:hover {
     object-fit: contain;
 }
 
-
 /* Candidate Info */
 .candidate-info {
     display: flex;
     align-items: center;
     gap: 15px;
-    min-width: 0; /* IMPORTANT */
+    min-width: 0;
 }
 
 .candidate-photo {
@@ -165,20 +203,17 @@ button:hover {
 .candidate-details h3 {
     margin: 0;
     font-size: 18px;
-    word-break: break-word;
 }
 
 .candidate-details p {
     margin: 5px 0 0;
     font-size: 14px;
     color: gray;
-    word-break: break-word;
 }
 
 
-/* Vote Button - FIXED WIDTH */
 .vote-btn {
-    width: 140px;   /* Constant width */
+    width: 140px;
     height: 45px;
     background: #1cc88a;
     border: none;
@@ -189,272 +224,59 @@ button:hover {
     justify-self: end;
 }
 
+/* Hover */
 .vote-btn:hover {
     background: #17a673;
 }
 
-/*  RESULT PAGE */
-
+/* ================= RESULT ================= */
 .result-card {
-    width: 90%;
-    max-width: 900px;
-    margin: auto;
-    padding: 30px;
+    background:white;
+    padding:30px;
+    border-radius:12px;
 }
 
-.result-table table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+.dark .result-card {
+    background:#1f1f1f;
 }
 
-.result-table th, .result-table td {
-    border: 1px solid #6a1c1c;
-    padding: 10px;
-    text-align: center;
-}
-
+/* TABLE */
 .result-table th {
-    background-color: #4CAF50;
-    color: white;
+    background:#4CAF50;
+    color:white;
 }
 
-.winner-box {
-    background: #ac9139;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    text-align: center;
+/* ================= PROGRESS ================= */
+.progress {
+    background:#ddd;
+    border-radius:20px;
+}
+
+.dark .progress {
+    background:#333;
 }
 
 .progress-bar {
-    height: 15px;
-    background: #4CAF50;
-    border-radius: 10px;
-}
-.btn-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    height:15px;
+    background:#4CAF50;
 }
 
-.details-btn {
-    background: #555;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    cursor: pointer;
-    border-radius: 6px;
-}
-
-.details-card {
-    background: white;
-    padding: 25px;
-    border-radius: 12px;
-    text-align: center;
-    width: 400px;
-    margin: 20px auto;
-}
-
-.details-photo {
-    width: 150px;
-    border-radius: 50%;
-    margin-bottom: 10px;
-}
-
-.details-symbol {
-    width: 80px;
-    margin: 10px 0;
-}
-
-.back-btn {
-    padding: 10px 20px;
-    background: #5ae67b;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-/* NAVBAR */
-.navbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:linear-gradient(90deg,#6c0849,#93d9c1);
-    padding:16px 40px;
-    box-shadow:0 2px 8px rgba(192, 99, 99, 0.1);
-}
-
-.logo{
-    color:rgb(236, 227, 227);
-    font-size:22px;
-    font-weight:700;
-    letter-spacing:1px;
-}
-
-.nav-links{
-    display:flex;
-    list-style:none;
-}
-
-.nav-links li{
-    margin-left:30px;
-}
-
-.nav-links a{
-    color:rgb(247, 244, 244);
-    text-decoration:none;
-    font-size:15px;
-    font-weight:500;
-    transition:0.3s;
-}
-
-.nav-links a:hover{
-    opacity:0.8;
-}
-
-/* DASHBOARD */
-.dashboard-container{
-    padding:50px;
+/* ================= PROFILE ================= */
+.profile-card {
+    background:white;
+    padding:30px;
+    border-radius:12px;
     text-align:center;
 }
 
-.dashboard-container h1{
-    color:#0f0e0e;
-    margin-bottom:10px;
+.dark .profile-card {
+    background:#1f1f1f;
 }
 
-.dashboard-cards{
-    display:flex;
-    justify-content:center;
-    gap:35px;
-    margin-top:40px;
-    flex-wrap:wrap;
-}
-
-/* CARD DESIGN */
-.card{
-    width:260px;
-    padding:30px 25px;
-    border-radius:12px;
-    background:white;
-    box-shadow:0 8px 20px rgba(0,0,0,0.08);
-    transition:all 0.3s ease;
-}
-
-.card:hover{
-    transform:translateY(-8px);
-    box-shadow:0 15px 30px rgba(159, 100, 100, 0.15);
-}
-
-.card h2{
-    margin-bottom:10px;
-    color:#333;
-}
-
-.card p{
-    color:#666;
-    font-size:14px;
-}
-
-.card button{
-    margin-top:18px;
-    padding:10px 22px;
-    border:none;
-    background:#5535bf;
-    color:white;
-    border-radius:6px;
-    font-size:14px;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-.card button:hover{
-    background:#4780dd;
-    transform:scale(1.05);
-}
-/* PROFILE PAGE */
-
-.profile-container{
-
-display:flex;
-justify-content:center;
-align-items:center;
-margin-top:80px;
-
-}
-
-.profile-card{
-
-width:350px;
-background:white;
-padding:30px;
-border-radius:12px;
-text-align:center;
-box-shadow:0 5px 15px rgba(30, 26, 26, 0.15);
-
-}
-
-.profile-img{
-
-width:120px;
-height:120px;
-border-radius:50%;
-margin-bottom:15px;
-
-}
-
-.profile-card p{
-
-margin:10px 0;
-font-size:16px;
-
-}
-
-.logout-btn{
-
-margin-top:20px;
-padding:10px 20px;
-border:none;
-background:#e74a3b;
-color:white;
-border-radius:6px;
-cursor:pointer;
-}
-.logout-btn:hover{
-
-background:#f95745;
-
-
-} 
-/* DARK MODE */
-.dark {
-  background: #121212;
-  color: white;
-}
-
-/* BUTTON */
-.theme-btn {
-  position:fixed;
-    top: 80px;
-  right: 10px;
-  padding: 10px;
-  width : 120px;
-
-}
-
-/* DASHBOARD */
-.dashboard {
-  display: flex;
-  gap: 20px;
-  margin: 20px;
-}
-
-.dashboard-card {
-  padding: 20px;
-  background: #edc7c7;
-  border-radius: 10px;
-  text-emphasis-color: black ;
+/* ================= RESPONSIVE ================= */
+@media (max-width:768px){
+    .dashboard-cards{
+        flex-direction:column;
+        align-items:center;
+    }
 }
