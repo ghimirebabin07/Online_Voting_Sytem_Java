@@ -136,9 +136,7 @@ function loginUser() {
     }, 300);
 }
 
-// =============================
-// LOAD CANDIDATES
-// =============================
+// LOAD CANDIDATES ON VOTE PAGE 
 
 function loadCandidates() {
 
