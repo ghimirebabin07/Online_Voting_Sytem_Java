@@ -172,9 +172,8 @@ function loadCandidates() {
     });
 }
 
-// =============================
 // DETAILS PAGE
-// =============================
+
 
 function viewDetails(id) {
     localStorage.setItem("selectedCandidateId", id);
