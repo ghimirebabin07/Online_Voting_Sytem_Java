@@ -1,6 +1,5 @@
-// =============================
+
 // INITIAL SETUP (RUN ONCE)
-// =============================
 
 if (!localStorage.getItem("users")) {
     localStorage.setItem("users", JSON.stringify([]));
