@@ -67,9 +67,8 @@ if (!localStorage.getItem("candidates")) {
     localStorage.setItem("candidates", JSON.stringify(candidates));
 }
 
-// =============================
 // REGISTER
-// =============================
+
 
 function registerUser() {
 
@@ -100,9 +99,9 @@ function registerUser() {
     window.location.href = "login.html";
 }
 
-// =============================
+
 // LOGIN
-// =============================
+
 
 function loginUser() {
 

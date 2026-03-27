@@ -1,6 +1,6 @@
 /*  GLOBAL  */
 * {
-    margin: 0; /* FIXED (was 1 ❌) */
+    margin: 0; 
     padding: 0;
     box-sizing: border-box;
     font-family: 'times new roman', serif;
