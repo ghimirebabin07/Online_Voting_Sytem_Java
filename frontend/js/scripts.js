@@ -242,7 +242,7 @@ function vote(id) {
 
 // =============================
 // RESULTS
-// =============================
+
 
 function loadResults() {
 
