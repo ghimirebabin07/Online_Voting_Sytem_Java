@@ -1,43 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Online Voting System</title>
     <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
+  </head>
+  <body>
+    <div class="app-shell" data-page="admin">
+      <nav class="topbar">
+        <a class="brand" href="admin.html">
+          <span class="brand-mark">OV</span>
+          Nepal Admin
+        </a>
+        <ul class="nav-links">
+          <li><a href="admin.html">Dashboard</a></li>
+          <li><a href="result.html">Results</a></li>
+          <li><button type="button" data-theme-toggle>Theme</button></li>
+          <li><button type="button" data-logout>Logout</button></li>
+        </ul>
+      </nav>
 
-    <div class="card">
-        <h2>Admin Dashboard</h2>
+      <main class="page">
+        <section class="section-title">
+          <p class="eyebrow">Administration</p>
+          <h1>Election control</h1>
+          <p>All values on this page are designed to come from backend services and database records.</p>
+        </section>
 
-        <div class="admin-section">
+        <div id="pageAlert" hidden></div>
 
-            <div class="admin-box">
-                <h3>Total Voters</h3>
-                <p id="totalVoters">0</p>
+        <section class="grid grid-3">
+          <article class="stat-card">
+            <span>Total Voters</span>
+            <strong id="totalVoters">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Total Candidates</span>
+            <strong id="totalCandidates">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Total Votes</span>
+            <strong id="totalVotes">0</strong>
+          </article>
+        </section>
+
+        <section class="grid grid-2" style="margin-top: 24px;">
+          <article class="panel">
+            <h2>Add Candidate</h2>
+            <p>Submits candidate data to `/api/admin/candidates` for backend validation and storage.</p>
+            <form id="candidateForm" class="form" novalidate>
+              <div class="form-row">
+                <label for="name">Candidate Name</label>
+                <input id="name" name="name" type="text" placeholder="Candidate name" required>
+              </div>
+              <div class="form-row">
+                <label for="party">Party</label>
+                <input id="party" name="party" type="text" placeholder="Party name" required>
+              </div>
+              <div class="form-row">
+                <label for="imageUrl">Image URL</label>
+                <input id="imageUrl" name="imageUrl" type="text" placeholder="../Images/Candidate.jpg or uploaded URL">
+              </div>
+              <div class="form-row">
+                <label for="symbolUrl">Symbol URL</label>
+                <input id="symbolUrl" name="symbolUrl" type="text" placeholder="../Images/Symbol.jpg or uploaded URL">
+              </div>
+              <div class="form-row">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" placeholder="Candidate manifesto or profile summary"></textarea>
+              </div>
+              <button class="btn btn-primary" type="submit">Save Candidate</button>
+            </form>
+          </article>
+
+          <article class="panel">
+            <h2>Election Status</h2>
+            <p>Use backend controls for opening, closing, or publishing election results.</p>
+            <div class="stat-card">
+              <span>Current Status</span>
+              <strong id="electionStatus">Checking</strong>
             </div>
-
-            <div class="admin-box">
-                <h3>Total Candidates</h3>
-                <p id="totalCandidate">0</p>
+            <div class="button-row" style="margin-top: 18px;">
+              <a class="btn btn-secondary" href="result.html">View Results</a>
+              <a class="btn btn-secondary" href="vote.html">Preview Ballot</a>
             </div>
+          </article>
+        </section>
 
-            <div class="admin-box">
-                <h3>Total Votes</h3>
-                <p id="totalVote">0</p>
-            </div>
-
-        </div>
-
-        <div class="button-group">
-            <button onclick="addCandidate()">Add Candidates</button>
-            <button onclick="viewResults()">View Result</button>
-            <button onclick="logout()">Logout</button>
-        </div>
-
-
+        <section class="section-title" style="margin-top: 32px;">
+          <p class="eyebrow">Candidates</p>
+          <h1>Current ballot</h1>
+        </section>
+        <section id="adminCandidateList" class="candidate-list"></section>
+      </main>
     </div>
-
-    <script src="../js/script.js"></script>
-</body>
+    <script src="../js/scripts.js"></script>
+  </body>
 </html>

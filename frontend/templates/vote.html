@@ -1,20 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Vote - Online Voting System</title>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cast Vote - Online Voting System</title>
     <link rel="stylesheet" href="../css/style.css">
-</head>
+  </head>
+  <body>
+    <div class="app-shell" data-page="vote">
+      <nav class="topbar">
+        <a class="brand" href="vote.html">
+          <span class="brand-mark">OV</span>
+          Nepal Vote
+        </a>
+        <ul class="nav-links">
+          <li><a href="vote.html">Vote</a></li>
+          <li><a href="result.html">Results</a></li>
+          <li><a href="profile.html">Profile</a></li>
+          <li><button type="button" data-theme-toggle>Theme</button></li>
+          <li><button type="button" data-logout>Logout</button></li>
+        </ul>
+      </nav>
 
-<body>
+      <main class="page">
+        <section class="section-title">
+          <p class="eyebrow">Ballot</p>
+          <h1>Cast your vote</h1>
+          <p>Candidate data loads from the backend. Vote submission sends the selected candidate ID, while duplicate vote prevention stays with the server and database.</p>
+        </section>
 
-    <div class="main-container">
-        <h1 class="page-title">Cast Your Vote</h1>
-
-        <div id="candidateContainer">
-        </div>
-
+        <div id="pageAlert" hidden></div>
+        <section id="candidateContainer" class="candidate-list"></section>
+      </main>
     </div>
-
     <script src="../js/scripts.js"></script>
-</body>
+  </body>
 </html>

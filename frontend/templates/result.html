@@ -1,37 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Election Results - Online Voting System</title>
     <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
+  </head>
+  <body>
+    <div class="app-shell" data-page="results">
+      <nav class="topbar">
+        <a class="brand" href="vote.html">
+          <span class="brand-mark">OV</span>
+          Nepal Vote
+        </a>
+        <ul class="nav-links">
+          <li><a href="vote.html">Vote</a></li>
+          <li><a href="result.html">Results</a></li>
+          <li><a href="profile.html">Profile</a></li>
+          <li><button type="button" data-theme-toggle>Theme</button></li>
+          <li><button type="button" data-logout>Logout</button></li>
+        </ul>
+      </nav>
 
-<div class="card result-card">
+      <main class="page">
+        <section class="section-title">
+          <p class="eyebrow">Live Count</p>
+          <h1>Election results</h1>
+          <p>Results load from the backend result endpoint and display candidate totals with vote percentages.</p>
+        </section>
 
-    <h2>Election Results</h2>
+        <div id="pageAlert" hidden></div>
 
-    <!-- Winner Section part -->
-    <div id="winnerSection" class="winner-box"></div>
+        <section class="result-summary">
+          <article class="stat-card">
+            <span>Current Leader</span>
+            <strong id="winnerName">Pending</strong>
+            <p id="winnerParty">Results pending</p>
+          </article>
+          <article class="stat-card">
+            <span>Total Votes</span>
+            <strong id="totalVotes">0</strong>
+          </article>
+        </section>
 
-    <!-- Candidate Results -->
-    <h3>Candidate Wise Results</h3>
-    <div id="candidateResult" class="result-table"></div>
-
-    <!-- Party Results -->
-    <h3>Party Wise Total Votes</h3>
-    <div id="partyResults" class="result-table"></div>
-
-    <!-- Voter Statistics -->
-    <h3>Voting Statistics</h3>
-    <div id="voterStats" class="result-table"></div>
-
-    <div class="button-group">
-        <button onclick="goBackAdmin()">Back to Dashboard</button>
+        <section id="candidateResults"></section>
+      </main>
     </div>
-
-</div>
-
-<script src="../js/script.js"></script>
-</body>
+    <script src="../js/scripts.js"></script>
+  </body>
 </html>

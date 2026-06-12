@@ -1,67 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Online Voting System</title>
     <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
+  </head>
+  <body>
+    <main class="auth-page">
+      <section class="auth-panel">
+        <a class="brand" href="index.html">
+          <span class="brand-mark">OV</span>
+          Nepal Online Voting
+        </a>
+        <h1>Voter registration</h1>
+        <p>Collect voter details needed for identity verification, eligibility checks, and duplicate vote prevention.</p>
+      </section>
 
-    <div class="card">
-        <h2>Register</h2>
+      <section class="auth-card">
+        <h2>Create account</h2>
+        <p>The backend can validate voter ID, phone number, and eligibility before activating the account.</p>
+        <div id="pageAlert" hidden></div>
 
-        <form id="registerForm">
+        <form id="registerForm" class="form" novalidate>
+          <div class="form-row">
+            <label for="fullName">Full Name</label>
+            <input id="fullName" name="fullName" type="text" placeholder="Enter full name" required>
+          </div>
 
-            <div class="form-group">
-                <label>Full Name</label>
-                <input
-                    type="text"
-                    placeholder="Enter your name"
-                    required
-                >
-            </div>
+          <div class="form-row">
+            <label for="phone">Mobile Number</label>
+            <input id="phone" name="phone" type="tel" inputmode="numeric" pattern="9[876][0-9]{8}" maxlength="10" placeholder="98XXXXXXXX" required>
+          </div>
 
-            <div class="form-group">
-                <label>Mobile Number</label>
-                <input
-                    type="text"
-                    pattern="9[876]\d{8}"
-                    maxlength="10"
-                    placeholder="Enter your mobile number"
-                    required
-                >
-            </div>
+          <div class="form-row">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="name@example.com">
+          </div>
 
-            <div class="form-group">
-                <label>Password</label>
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter password"
-                    required
-                >
-            </div>
+          <div class="form-row">
+            <label for="voterId">Voter ID</label>
+            <input id="voterId" name="voterId" type="text" placeholder="Enter voter ID" required>
+          </div>
 
-            <div class="form-group">
-                <label>Confirm Password</label>
-                <input
-                    type="password"
-                    id="confirmPassword"
-                    placeholder="Confirm password"
-                    required
-                >
-            </div>
+          <div class="form-row">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" minlength="8" placeholder="At least 8 characters" required>
+          </div>
 
-            <button type="submit">Register</button>
+          <div class="form-row">
+            <label for="confirmPassword">Confirm Password</label>
+            <input id="confirmPassword" name="confirmPassword" type="password" minlength="8" placeholder="Confirm password" required>
+          </div>
 
-            <div class="link-text">
-                Already have an account?
-                <a href="login.html">Login</a>
-            </div>
-
+          <button class="btn btn-primary" type="submit">Register</button>
+          <p>Already registered? <a class="muted-link" href="login.html">Login</a></p>
         </form>
-    </div>
-
-    <script src="../js/script.js"></script>
-</body>
+      </section>
+    </main>
+    <script src="../js/scripts.js"></script>
+  </body>
 </html>

@@ -1,354 +1,553 @@
-
-// INITIAL SETUP (RUN ONCE)
-
-if (!localStorage.getItem("users")) {
-    localStorage.setItem("users", JSON.stringify([]));
-}
-
-if (!localStorage.getItem("candidates")) {
-
-    const candidates = [
-        {
-            id: 1,
-            name: "Balen Shah",
-            party: "Rastriya Swatantra Party",
-            image: "../Images/Balen_.jpg",
-            symbol: "../Images/RSP.jpg",
-            votes: 0,
-            description: "Strong Engineering Background focused on development and transparency."
-        },
-        {
-            id: 2,
-            name: "Rabi Lamichhane",
-            party: "Rastriya Swatantra Party",
-            image: "../Images/Rabi.jpg",
-            symbol: "../Images/RSP.jpg",
-            votes: 0,
-            description: "Advocates anti-corruption reforms and governance transparency."
-        },
-        {
-            id: 3,
-            name: "Sobita Gautam",
-            party: "Rastriya Swatantra Party",
-            image: "../Images/Sobita.jpg",
-            symbol: "../Images/RSP.jpg",
-            votes: 0,
-            description: "Focused on women empowerment and policy reform."
-        },
-        {
-            id: 4,
-            name: "KP Sharma Oli",
-            party: "UML",
-            image: "../Images/Kp.jpg",
-            symbol: "../Images/UML.jpg",
-            votes: 0,
-            description: "Focused on infrastructure and national development."
-        },
-        {
-            id: 5,
-            name: "Pushpa Kamal Dahal",
-            party: "Maoist Center",
-            image: "../Images/Puspa.jpg",
-            symbol: "../Images/Maoist.jpg",
-            votes: 0,
-            description: "Promotes social justice and democratic reforms."
-        },
-        {
-            id: 6,
-            name: "Sher Bahadur Deuba",
-            party: "Congress",
-            image: "../Images/Sher.jpg",
-            symbol: "../Images/Congress.jpg",
-            votes: 0,
-            description: "Experienced politician focused on governance reforms."
-        }
-    ];
-
-    localStorage.setItem("candidates", JSON.stringify(candidates));
-}
-
-// REGISTER
-
-
-function registerUser() {
-
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    if (!username || !password) {
-        alert("Please fill all fields!");
-        return;
-    }
-
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-
-    if (users.find(u => u.username === username)) {
-        alert("User already exists!");
-        return;
-    }
-
-    users.push({
-        username,
-        password,
-        voted: false
-    });
-
-    localStorage.setItem("users", JSON.stringify(users));
-
-    alert("Registration Successful!");
-    window.location.href = "login.html";
-}
-
-
-// LOGIN
-
-
-function loginUser() {
-
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value.trim();
-
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-
-    if (users.length === 0) {
-        alert("No users found! Please register first.");
-        return;
-    }
-
-    const user = users.find(
-        u => u.username === username && u.password === password
-    );
-
-    if (!user) {
-        alert("Invalid username or password!");
-        return;
-    }
-
-    localStorage.setItem("loggedInUser", JSON.stringify(user));
-
-    alert("Login Successful!");
-
-
-    setTimeout(() => {
-        window.location.href = "dashboard.html";
-    }, 300);
-}
-
-// LOAD CANDIDATES ON VOTE PAGE 
-
-function loadCandidates() {
-
-    const container = document.getElementById("candidateContainer");
-    if (!container) return;
-
-    const candidates = JSON.parse(localStorage.getItem("candidates"));
-
-    container.innerHTML = "";
-
-    candidates.forEach(candidate => {
-
-        container.innerHTML += `
-        <div class="candidate-row">
-
-            <img class="party-symbol" src="${candidate.symbol}">
-
-            <div class="candidate-info">
-                <img class="candidate-photo" src="${candidate.image}">
-                <div>
-                    <h3>${candidate.name}</h3>
-                    <p>${candidate.party}</p>
-                </div>
-            </div>
-
-            <div class="btn-group">
-                <button class="vote-btn" onclick="vote(${candidate.id})">Vote</button>
-                <button class="details-btn" onclick="viewDetails(${candidate.id})">Details</button>
-            </div>
-
-        </div>
-        `;
-    });
-}
-
-// DETAILS PAGE
-
-
-function viewDetails(id) {
-    localStorage.setItem("selectedCandidateId", id);
-    window.location.href = "candidate-details.html";
-}
-
-function loadCandidateDetails() {
-
-    const id = localStorage.getItem("selectedCandidateId");
-    if (!id) return;
-
-    const candidates = JSON.parse(localStorage.getItem("candidates"));
-
-    const candidate = candidates.find(c => c.id == id);
-
-    if (!candidate) return;
-
-    document.getElementById("detailName").innerText = candidate.name;
-    document.getElementById("detailParty").innerText = candidate.party;
-    document.getElementById("detailDesc").innerText = candidate.description;
-
-    document.getElementById("detailImage").src = candidate.image;
-    document.getElementById("detailSymbol").src = candidate.symbol;
-}
-
-// =============================
-// VOTE SYSTEM
-// =============================
-
-function vote(id) {
-
-    let user = JSON.parse(localStorage.getItem("loggedInUser"));
-
-    if (!user) {
-        alert("Please login first!");
-        window.location.href = "login.html";
-        return;
-    }
-
-    if (user.voted) {
-        alert("You already voted!");
-        return;
-    }
-
-    let candidates = JSON.parse(localStorage.getItem("candidates"));
-
-    const index = candidates.findIndex(c => c.id === id);
-
-    if (index === -1) return;
-
-    candidates[index].votes += 1;
-
-    localStorage.setItem("candidates", JSON.stringify(candidates));
-
-    let users = JSON.parse(localStorage.getItem("users"));
-
-    const userIndex = users.findIndex(u => u.username === user.username);
-
-    users[userIndex].voted = true;
-
-    localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("loggedInUser", JSON.stringify(users[userIndex]));
-
-    alert("Vote Successful!");
-
-    window.location.href = "result.html";
-}
-
-// =============================
-// RESULTS
-
-
-function loadResults() {
-
-    const container = document.getElementById("candidateResults");
-    if (!container) return;
-
-    const candidates = JSON.parse(localStorage.getItem("candidates"));
-
-    let total = candidates.reduce((sum, c) => sum + c.votes, 0);
-
-    let html = `
-    <table>
-    <tr>
-        <th>Name</th>
-        <th>Party</th>
-        <th>Votes</th>
-        <th>%</th>
-    </tr>
-    `;
-
-    candidates.forEach(c => {
-
-        let percent = total ? ((c.votes / total) * 100).toFixed(2) : 0;
-
-        html += `
-        <tr>
-            <td>${c.name}</td>
-            <td>${c.party}</td>
-            <td>${c.votes}</td>
-            <td>${percent}%</td>
-        </tr>
-        `;
-    });
-
-    html += "</table>";
-
-    container.innerHTML = html;
-}
-
-// =============================
-// PROFILE
-// =============================
-
-function loadProfile() {
-
-    const user = JSON.parse(localStorage.getItem("loggedInUser"));
-
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
-
-    document.getElementById("userName").innerText = user.username;
-
-    document.getElementById("voteStatus").innerText =
-        user.voted ? "Completed ✅" : "Not Voted ❌";
-}
-
-// =============================
-// NAVIGATION
-// =============================
-
-function goVote() {
-    window.location.href = "vote.html";
-}
-
-function viewResults() {
-    window.location.href = "result.html";
-}
-
-function logout() {
-    localStorage.removeItem("loggedInUser");
-    window.location.href = "login.html";
-}
-
-// =============================
-// DARK MODE
-// =============================
-
-function toggleTheme() {
-    document.body.classList.toggle("dark");
-
-    let btn = document.getElementById("themeBtn");
-
-    if (document.body.classList.contains("dark")) {
-        localStorage.setItem("theme", "dark");
-        if (btn) btn.innerText = "☀️";
-    } else {
-        localStorage.setItem("theme", "light");
-        if (btn) btn.innerText = "🌙";
-    }
-}
-
-// =============================
-// AUTO LOAD
-// =============================
-
-window.onload = function () {
-
-    // DARK MODE LOAD
-    if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark");
-    }
-
-    loadCandidates();
-    loadResults();
-    loadProfile();
-    loadCandidateDetails();
+const API_BASE_URL = window.VOTING_API_BASE_URL || "";
+const TOKEN_KEY = "ovs_auth_token";
+const USER_KEY = "ovs_user";
+
+const API_ENDPOINTS = {
+  register: "/api/auth/register",
+  login: "/api/auth/login",
+  adminLogin: "/api/auth/admin/login",
+  logout: "/api/auth/logout",
+  me: "/api/users/me",
+  candidates: "/api/candidates",
+  vote: "/api/votes",
+  results: "/api/results",
+  adminStats: "/api/admin/stats",
+  adminCandidates: "/api/admin/candidates",
 };
+
+function getToken() {
+  return sessionStorage.getItem(TOKEN_KEY);
+}
+
+function setSession(data) {
+  if (data?.token) {
+    sessionStorage.setItem(TOKEN_KEY, data.token);
+  }
+
+  if (data?.user) {
+    sessionStorage.setItem(USER_KEY, JSON.stringify(data.user));
+  }
+}
+
+function getStoredUser() {
+  try {
+    return JSON.parse(sessionStorage.getItem(USER_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function clearSession() {
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_KEY);
+}
+
+async function apiRequest(endpoint, options = {}) {
+  const headers = {
+    Accept: "application/json",
+    ...(options.body ? { "Content-Type": "application/json" } : {}),
+    ...(options.headers || {}),
+  };
+
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    credentials: "include",
+    ...options,
+    headers,
+  });
+
+  const contentType = response.headers.get("content-type") || "";
+  const data = contentType.includes("application/json") ? await response.json() : null;
+
+  if (!response.ok) {
+    const message = data?.message || data?.error || `Request failed with status ${response.status}`;
+    throw new Error(message);
+  }
+
+  return data;
+}
+
+function $(selector, root = document) {
+  return root.querySelector(selector);
+}
+
+function $all(selector, root = document) {
+  return Array.from(root.querySelectorAll(selector));
+}
+
+function setText(selector, value) {
+  const element = $(selector);
+  if (element) element.textContent = value ?? "";
+}
+
+function showAlert(message, type = "info") {
+  const alertBox = $("#pageAlert");
+  if (!alertBox) {
+    window.alert(message);
+    return;
+  }
+
+  alertBox.textContent = message;
+  alertBox.className = `alert ${type}`;
+  alertBox.hidden = false;
+}
+
+function clearAlert() {
+  const alertBox = $("#pageAlert");
+  if (alertBox) {
+    alertBox.hidden = true;
+    alertBox.textContent = "";
+  }
+}
+
+function setButtonLoading(button, isLoading, label = "Please wait") {
+  if (!button) return;
+  if (isLoading) {
+    button.dataset.originalText = button.textContent;
+    button.textContent = label;
+    button.disabled = true;
+  } else {
+    button.textContent = button.dataset.originalText || button.textContent;
+    button.disabled = false;
+  }
+}
+
+function serializeForm(form) {
+  return Object.fromEntries(new FormData(form).entries());
+}
+
+function validateForm(form) {
+  if (form.checkValidity()) return true;
+  form.reportValidity();
+  return false;
+}
+
+function requireAuth(roles = []) {
+  const token = getToken();
+  const user = getStoredUser();
+
+  if (!token && !user) {
+    window.location.href = "login.html";
+    return null;
+  }
+
+  if (roles.length && !roles.includes(user?.role)) {
+    window.location.href = "vote.html";
+    return null;
+  }
+
+  return user || {};
+}
+
+function normalizeCandidate(candidate) {
+  return {
+    id: candidate.id ?? candidate.candidateId,
+    name: candidate.name ?? candidate.fullName ?? "Unnamed Candidate",
+    party: candidate.party ?? candidate.partyName ?? "Independent",
+    imageUrl: candidate.imageUrl ?? candidate.image ?? "../Images/Profile.jpg",
+    symbolUrl: candidate.symbolUrl ?? candidate.symbol ?? "../Images/Profile.jpg",
+    description: candidate.description ?? candidate.manifesto ?? "Candidate information will be updated by the election administrator.",
+    votes: candidate.votes ?? candidate.totalVotes ?? 0,
+  };
+}
+
+function normalizeResult(result) {
+  return {
+    id: result.id ?? result.candidateId,
+    name: result.name ?? result.candidateName ?? "Unnamed Candidate",
+    party: result.party ?? result.partyName ?? "Independent",
+    votes: Number(result.votes ?? result.totalVotes ?? 0),
+    percent: Number(result.percent ?? result.percentage ?? 0),
+    imageUrl: result.imageUrl ?? result.image ?? "../Images/Profile.jpg",
+    symbolUrl: result.symbolUrl ?? result.symbol ?? "../Images/Profile.jpg",
+  };
+}
+
+async function getCandidates() {
+  const data = await apiRequest(API_ENDPOINTS.candidates);
+  return (data?.candidates || data || []).map(normalizeCandidate);
+}
+
+async function initRegisterPage() {
+  const form = $("#registerForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+
+    if (!validateForm(form)) return;
+
+    const payload = serializeForm(form);
+    if (payload.password !== payload.confirmPassword) {
+      showAlert("Password and confirm password must match.", "error");
+      return;
+    }
+
+    const submit = form.querySelector("button[type='submit']");
+    setButtonLoading(submit, true, "Creating account");
+
+    try {
+      await apiRequest(API_ENDPOINTS.register, {
+        method: "POST",
+        body: JSON.stringify({
+          fullName: payload.fullName,
+          phone: payload.phone,
+          email: payload.email || null,
+          voterId: payload.voterId,
+          password: payload.password,
+        }),
+      });
+
+      showAlert("Registration successful. You can login now.", "success");
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 800);
+    } catch (error) {
+      showAlert(error.message, "error");
+    } finally {
+      setButtonLoading(submit, false);
+    }
+  });
+}
+
+async function initLoginPage() {
+  const form = $("#loginForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+
+    if (!validateForm(form)) return;
+
+    const payload = serializeForm(form);
+    const submit = form.querySelector("button[type='submit']");
+    setButtonLoading(submit, true, "Signing in");
+
+    try {
+      const data = await apiRequest(API_ENDPOINTS.login, {
+        method: "POST",
+        body: JSON.stringify({
+          phone: payload.phone,
+          password: payload.password,
+        }),
+      });
+
+      setSession({
+        ...data,
+        user: data?.user || { phone: payload.phone, role: "VOTER" },
+      });
+      window.location.href = "vote.html";
+    } catch (error) {
+      showAlert(error.message, "error");
+    } finally {
+      setButtonLoading(submit, false);
+    }
+  });
+}
+
+async function initAdminLoginPage() {
+  const form = $("#adminLoginForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+
+    if (!validateForm(form)) return;
+
+    const payload = serializeForm(form);
+    const submit = form.querySelector("button[type='submit']");
+    setButtonLoading(submit, true, "Signing in");
+
+    try {
+      const data = await apiRequest(API_ENDPOINTS.adminLogin, {
+        method: "POST",
+        body: JSON.stringify({
+          username: payload.username,
+          password: payload.password,
+        }),
+      });
+
+      setSession({
+        ...data,
+        user: data?.user || { fullName: payload.username, role: "ADMIN" },
+      });
+      window.location.href = "admin.html";
+    } catch (error) {
+      showAlert(error.message, "error");
+    } finally {
+      setButtonLoading(submit, false);
+    }
+  });
+}
+
+async function initVotePage() {
+  const container = $("#candidateContainer");
+  if (!container) return;
+
+  requireAuth();
+  container.innerHTML = `<div class="empty-state">Loading candidates...</div>`;
+
+  let candidates = [];
+  try {
+    candidates = await getCandidates();
+    if (!candidates.length) {
+      container.innerHTML = `<div class="empty-state">No candidates are currently available.</div>`;
+      return;
+    }
+  } catch (error) {
+    container.innerHTML = `<div class="empty-state">Candidate service is unavailable.</div>`;
+    showAlert(error.message, "error");
+    return;
+  }
+
+  container.innerHTML = candidates.map((candidate) => candidateCard(candidate, true)).join("");
+
+  $all("[data-vote-id]").forEach((button) => {
+    button.addEventListener("click", () => submitVote(button.dataset.voteId, button));
+  });
+}
+
+function candidateCard(candidate, withVoteAction = false) {
+  const action = withVoteAction
+    ? `<button class="btn btn-primary" data-vote-id="${candidate.id}">Vote</button>`
+    : "";
+
+  return `
+    <article class="candidate-card">
+      <img class="candidate-symbol" src="${candidate.symbolUrl}" alt="${candidate.party} symbol">
+      <img class="candidate-photo" src="${candidate.imageUrl}" alt="${candidate.name}">
+      <div class="candidate-body">
+        <p class="eyebrow">${candidate.party}</p>
+        <h3>${candidate.name}</h3>
+        <p>${candidate.description}</p>
+      </div>
+      <div class="candidate-actions">
+        ${action}
+      </div>
+    </article>
+  `;
+}
+
+async function submitVote(candidateId, button) {
+  clearAlert();
+
+  if (!window.confirm("Confirm your vote? You cannot change it after submission.")) {
+    return;
+  }
+
+  setButtonLoading(button, true, "Submitting");
+
+  try {
+    await apiRequest(API_ENDPOINTS.vote, {
+      method: "POST",
+      body: JSON.stringify({ candidateId }),
+    });
+
+    const user = getStoredUser() || {};
+    sessionStorage.setItem(USER_KEY, JSON.stringify({ ...user, hasVoted: true }));
+    showAlert("Your vote has been submitted successfully.", "success");
+    setTimeout(() => {
+      window.location.href = "result.html";
+    }, 900);
+  } catch (error) {
+    showAlert(error.message, "error");
+  } finally {
+    setButtonLoading(button, false);
+  }
+}
+
+async function initResultsPage() {
+  const container = $("#candidateResults");
+  if (!container) return;
+
+  container.innerHTML = `<div class="empty-state">Loading results...</div>`;
+
+  try {
+    const data = await apiRequest(API_ENDPOINTS.results);
+    const results = (data?.candidates || data?.results || data || []).map(normalizeResult);
+    renderResults(results, data);
+  } catch (error) {
+    container.innerHTML = `<div class="empty-state">Results are not available yet.</div>`;
+    showAlert(error.message, "error");
+  }
+}
+
+function renderResults(results, data = {}) {
+  const container = $("#candidateResults");
+  const totalVotes = results.reduce((sum, item) => sum + item.votes, 0);
+  const winner = results.slice().sort((a, b) => b.votes - a.votes)[0];
+
+  setText("#totalVotes", data.totalVotes ?? totalVotes);
+  setText("#winnerName", winner ? winner.name : "Pending");
+  setText("#winnerParty", winner ? winner.party : "Results pending");
+
+  if (!results.length) {
+    container.innerHTML = `<div class="empty-state">No votes have been counted yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = results
+    .sort((a, b) => b.votes - a.votes)
+    .map((result) => {
+      const percent = totalVotes ? ((result.votes / totalVotes) * 100).toFixed(1) : result.percent.toFixed(1);
+      return `
+        <article class="result-row">
+          <img src="${result.symbolUrl}" alt="${result.party} symbol">
+          <div>
+            <strong>${result.name}</strong>
+            <span>${result.party}</span>
+            <div class="progress"><div style="width: ${percent}%"></div></div>
+          </div>
+          <p>${result.votes} votes<br><span>${percent}%</span></p>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+async function initProfilePage() {
+  const page = $("[data-page='profile']");
+  if (!page) return;
+
+  const user = requireAuth();
+  if (!user) return;
+
+  setText("#profileName", user.fullName || user.name || "Voter");
+  setText("#profilePhone", user.phone || "-");
+  setText("#profileEmail", user.email || "-");
+  setText("#profileVoterId", user.voterId || "-");
+  setText("#profileStatus", user.hasVoted ? "Vote submitted" : "Vote pending");
+
+  try {
+    const profile = await apiRequest(API_ENDPOINTS.me);
+    const account = profile?.user || profile;
+    sessionStorage.setItem(USER_KEY, JSON.stringify(account));
+    setText("#profileName", account.fullName || account.name || "Voter");
+    setText("#profilePhone", account.phone || "-");
+    setText("#profileEmail", account.email || "-");
+    setText("#profileVoterId", account.voterId || "-");
+    setText("#profileStatus", account.hasVoted ? "Vote submitted" : "Vote pending");
+  } catch (error) {
+    showAlert(error.message, "error");
+  }
+}
+
+async function initAdminPage() {
+  const page = $("[data-page='admin']");
+  if (!page) return;
+
+  requireAuth(["ADMIN"]);
+
+  try {
+    const stats = await apiRequest(API_ENDPOINTS.adminStats);
+    setText("#totalVoters", stats.totalVoters ?? 0);
+    setText("#totalCandidates", stats.totalCandidates ?? 0);
+    setText("#totalVotes", stats.totalVotes ?? 0);
+    setText("#electionStatus", stats.electionStatus || "Open");
+  } catch (error) {
+    showAlert(error.message, "error");
+  }
+
+  await renderAdminCandidates();
+  initCandidateForm();
+}
+
+async function renderAdminCandidates() {
+  const container = $("#adminCandidateList");
+  if (!container) return;
+
+  container.innerHTML = `<div class="empty-state">Loading candidates...</div>`;
+  let candidates = [];
+  try {
+    candidates = await getCandidates();
+  } catch (error) {
+    container.innerHTML = `<div class="empty-state">Candidate service is unavailable.</div>`;
+    showAlert(error.message, "error");
+    return;
+  }
+
+  container.innerHTML = candidates.length
+    ? candidates.map((candidate) => candidateCard(candidate, false)).join("")
+    : `<div class="empty-state">No candidates have been added yet.</div>`;
+}
+
+function initCandidateForm() {
+  const form = $("#candidateForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    if (!validateForm(form)) return;
+
+    const payload = serializeForm(form);
+    const submit = form.querySelector("button[type='submit']");
+    setButtonLoading(submit, true, "Saving");
+
+    try {
+      await apiRequest(API_ENDPOINTS.adminCandidates, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      showAlert("Candidate saved successfully.", "success");
+      form.reset();
+      await renderAdminCandidates();
+    } catch (error) {
+      showAlert(error.message, "error");
+    } finally {
+      setButtonLoading(submit, false);
+    }
+  });
+}
+
+async function logout() {
+  try {
+    await apiRequest(API_ENDPOINTS.logout, { method: "POST" });
+  } catch {
+    // The local session should still be cleared if the backend session has expired.
+  }
+
+  clearSession();
+  window.location.href = "login.html";
+}
+
+function initNavigation() {
+  $all("[data-logout]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      logout();
+    });
+  });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem("ovs_theme");
+  if (savedTheme === "dark") document.documentElement.classList.add("dark");
+
+  $all("[data-theme-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark");
+      localStorage.setItem("ovs_theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
+  initNavigation();
+  initRegisterPage();
+  initLoginPage();
+  initAdminLoginPage();
+  initVotePage();
+  initResultsPage();
+  initProfilePage();
+  initAdminPage();
+});
