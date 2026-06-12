@@ -11,7 +11,6 @@
 - HTML
 - CSS
 - JavaScript
-- LocalStorage
 
 ## Future Improvements
 - Spring Boot Backend
