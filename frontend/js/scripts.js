@@ -3,16 +3,16 @@ const TOKEN_KEY = "ovs_auth_token";
 const USER_KEY = "ovs_user";
 
 const API_ENDPOINTS = {
-  register: "/api/auth/register",
-  login: "/api/auth/login",
-  adminLogin: "/api/auth/admin/login",
-  logout: "/api/auth/logout",
-  me: "/api/users/me",
-  candidates: "/api/candidates",
-  vote: "/api/votes",
-  results: "/api/results",
-  adminStats: "/api/admin/stats",
-  adminCandidates: "/api/admin/candidates",
+ register: "/online-voting-backend/api/auth/register",
+  login: "/online-voting-backend/api/auth/login",
+  adminLogin: "/online-voting-backend/api/auth/admin/login",
+  logout: "/online-voting-backend/api/auth/logout",
+  me: "/online-voting-backend/api/users/me",
+  candidates: "/online-voting-backend/api/candidates",
+  vote: "/online-voting-backend/api/votes",
+  results: "/online-voting-backend/api/results",
+  adminStats: "/online-voting-backend/api/admin/stats",
+  adminCandidates: "/online-voting-backend/api/admin/candidates",
 };
 
 function getToken() {

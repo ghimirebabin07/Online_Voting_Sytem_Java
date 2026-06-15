@@ -1,0 +1,28 @@
+# Build output
+target/
+backend/target/
+
+# Java / Maven
+*.class
+*.jar
+*.war
+*.ear
+.mvn/timing.properties
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# VS Code local settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local environment files
+.env
+*.local

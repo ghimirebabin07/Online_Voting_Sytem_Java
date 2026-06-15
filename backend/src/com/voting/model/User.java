@@ -3,10 +3,89 @@ package com.voting.model;
 public class User {
 
     private int id;
-    private String username;
-    private String password;
+    private String fullName;
+    private String mobile;
+    private String email;
+    private String voterId;
+    private String passwordHash;
     private String role;
-    private boolean voted;
+    private boolean hasVoted;
 
-    // Getters and Setters
+    public User() {
+    }
+
+    public User(int id, String fullName, String mobile, String email, String voterId, String passwordHash, String role, boolean hasVoted) {
+        this.id = id;
+        this.fullName = fullName;
+        this.mobile = mobile;
+        this.email = email;
+        this.voterId = voterId;
+        this.passwordHash = passwordHash;
+        this.role = role;
+        this.hasVoted = hasVoted;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getVoterId() {
+        return voterId;
+    }
+
+    public void setVoterId(String voterId) {
+        this.voterId = voterId;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isHasVoted() {
+        return hasVoted;
+    }
+
+    public void setHasVoted(boolean hasVoted) {
+        this.hasVoted = hasVoted;
+    }
 }
