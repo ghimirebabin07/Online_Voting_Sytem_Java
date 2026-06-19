@@ -48,3 +48,19 @@ ON CONFLICT (id) DO UPDATE SET
     description = EXCLUDED.description;
 
 SELECT setval('candidates_id_seq', (SELECT MAX(id) FROM candidates));
+
+INSERT INTO users (full_name, mobile, email, voter_id, password_hash, role)
+VALUES (
+    'System Administrator',
+    '9800000000',
+    'admin@voting.local',
+    'admin',
+    '120000:TWf+EgpcF9msR1jVsWTjCQ==:dgKtZqyenZ46UX1JOk8yHb7aZZMhJyLSS9hD5eYV300=',
+    'ADMIN'
+)
+ON CONFLICT (mobile) DO UPDATE SET
+    full_name = EXCLUDED.full_name,
+    email = EXCLUDED.email,
+    voter_id = EXCLUDED.voter_id,
+    password_hash = EXCLUDED.password_hash,
+    role = EXCLUDED.role;

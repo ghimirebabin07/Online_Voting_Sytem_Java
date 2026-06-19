@@ -21,7 +21,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
-        <url-pattern>/online-voting-backend/api/auth/register</url-pattern>
+        <url-pattern>/api/auth/register</url-pattern>
     </servlet-mapping>
 
     <servlet>

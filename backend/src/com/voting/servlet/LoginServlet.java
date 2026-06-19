@@ -43,7 +43,8 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            String token = AuthUtil.issueToken(request, user.get().getId(), user.get().getRole());
+            String role = normalizedRole(user.get().getRole());
+            String token = AuthUtil.issueToken(request, user.get().getId(), role);
             JsonUtil.write(response, HttpServletResponse.SC_OK, userJson(user.get(), token));
         } catch (SQLException e) {
             throw new ServletException("Login failed", e);
@@ -51,6 +52,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     private String userJson(User user, String token) {
+        String role = normalizedRole(user.getRole());
         return "{"
                 + "\"success\":true,"
                 + "\"message\":\"Login successful.\","
@@ -62,7 +64,7 @@ public class LoginServlet extends HttpServlet {
                 + "\"mobile\":\"" + JsonUtil.escape(user.getMobile()) + "\","
                 + "\"email\":\"" + JsonUtil.escape(user.getEmail()) + "\","
                 + "\"voterId\":\"" + JsonUtil.escape(user.getVoterId()) + "\","
-                + "\"role\":\"" + JsonUtil.escape(user.getRole()) + "\","
+                + "\"role\":\"" + JsonUtil.escape(role) + "\","
                 + "\"hasVoted\":" + user.isHasVoted()
                 + "}"
                 + "}";
@@ -70,5 +72,9 @@ public class LoginServlet extends HttpServlet {
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    private String normalizedRole(String role) {
+        return isBlank(role) ? "VOTER" : role.trim().toUpperCase();
     }
 }

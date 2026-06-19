@@ -37,8 +37,8 @@ public class UserDAO {
 
     public Optional<User> adminLogin(String mobile, String password) throws SQLException {
 
-        Optional<User> user = login(mobile, password);
-        if (user.isEmpty() || !"ADMIN".equals(user.get().getRole())) {
+        Optional<User> user = findByLoginIdentifier(mobile);
+        if (user.isEmpty() || !PasswordUtil.verify(password, user.get().getPasswordHash()) || !isAdmin(user.get())) {
             return Optional.empty();
         }
         return user;
@@ -63,6 +63,34 @@ public class UserDAO {
         return Optional.empty();
     }
 
+    public Optional<User> findByLoginIdentifier(String identifier) throws SQLException {
+
+        String sql = "SELECT id, full_name, mobile, email, voter_id, password_hash, role, has_voted "
+                + "FROM users "
+                + "WHERE mobile = ? OR LOWER(email) = LOWER(?) OR LOWER(voter_id) = LOWER(?)";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, identifier);
+            ps.setString(2, identifier);
+            ps.setString(3, identifier);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapUser(rs));
+                }
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private boolean isAdmin(User user) {
+        String role = user.getRole();
+        return role != null && "ADMIN".equalsIgnoreCase(role.trim());
+    }
+
     public Optional<User> findById(int id) throws SQLException {
 
         String sql = "SELECT id, full_name, mobile, email, voter_id, password_hash, role, has_voted FROM users WHERE id = ?";
@@ -84,7 +112,7 @@ public class UserDAO {
 
     public int countUsers() throws SQLException {
 
-        String sql = "SELECT COUNT(*) FROM users";
+        String sql = "SELECT COUNT(*) FROM users WHERE UPPER(TRIM(role)) = 'VOTER'";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -97,7 +125,7 @@ public class UserDAO {
 
     public int countVotedUsers() throws SQLException {
 
-        String sql = "SELECT COUNT(*) FROM users WHERE has_voted = true";
+        String sql = "SELECT COUNT(*) FROM users WHERE has_voted = true AND UPPER(TRIM(role)) = 'VOTER'";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -110,7 +138,7 @@ public class UserDAO {
 
     public boolean castVote(int userId, int candidateId) throws SQLException {
 
-        String lockUserSql = "SELECT has_voted FROM users WHERE id = ? FOR UPDATE";
+        String lockUserSql = "SELECT has_voted, role FROM users WHERE id = ? FOR UPDATE";
         String voteSql = "INSERT INTO votes(user_id, candidate_id) VALUES (?, ?)";
         String updateUserSql = "UPDATE users SET has_voted = true WHERE id = ?";
         String updateCandidateSql = "UPDATE candidates SET vote_count = vote_count + 1 WHERE id = ?";
@@ -122,7 +150,7 @@ public class UserDAO {
                 lockUser.setInt(1, userId);
 
                 try (ResultSet rs = lockUser.executeQuery()) {
-                    if (!rs.next() || rs.getBoolean("has_voted")) {
+                    if (!rs.next() || rs.getBoolean("has_voted") || !"VOTER".equalsIgnoreCase(rs.getString("role").trim())) {
                         con.rollback();
                         return false;
                     }

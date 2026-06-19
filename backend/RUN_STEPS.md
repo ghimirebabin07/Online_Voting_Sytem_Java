@@ -1,74 +1,66 @@
 # How to Run the Online Voting System
 
-## 1. Install required software
-
-Install these once:
+## 1. Install Required Software
 
 - Java JDK 17 or newer
 - Apache Maven
 - PostgreSQL with pgAdmin
 - Apache Tomcat 10.1 or newer
-- VS Code extensions:
-  - Extension Pack for Java
-  - Community Server Connectors, or another Tomcat runner
+- VS Code Java extensions, if you are using VS Code
 
-Important: use Tomcat 10+, not Tomcat 9. This backend uses `jakarta.servlet`, and Tomcat 9 uses the older `javax.servlet`.
+Use Tomcat 10+, because this project uses `jakarta.servlet`.
 
-## 2. Open the correct folder in VS Code
+## 2. Create the Database
 
-Open this folder:
+In pgAdmin, connect to the default PostgreSQL database and run:
 
 ```text
-D:\First Java Project
-```
-
-Then wait for VS Code to import the Maven project. If it asks to update/import Java configuration, click **Yes**.
-
-## 3. Create the database in pgAdmin
-
-Open pgAdmin.
-
-First, connect to the default `postgres` database and run:
-
-```text
-D:\First Java Project\Online_Voting_Sytem_Java\backend\database\create_database.sql
+backend/database/create_database.sql
 ```
 
 Then connect to the new `voting_system` database and run:
 
 ```text
-D:\First Java Project\Online_Voting_Sytem_Java\backend\database\schema.sql
+backend/database/schema.sql
 ```
 
-## 4. Set your database password
+The schema creates:
 
-The backend default database settings are:
+- `users`
+- `candidates`
+- `votes`
 
-- database: `voting_system`
-- username: `postgres`
-- password: `postgres`
+It also inserts demo candidates and one demo admin user.
 
-If your PostgreSQL password is different, set this environment variable before running Tomcat:
+## 3. Set Local Database Configuration
+
+The backend defaults to:
+
+- Database URL: `jdbc:postgresql://localhost:5432/voting_system`
+- Database user: `postgres`
+
+Set your own PostgreSQL password before running Tomcat:
 
 ```powershell
-$env:VOTING_DB_PASSWORD="your_pgadmin_password"
+$env:VOTING_DB_PASSWORD="your_postgresql_password"
 ```
 
-You can also edit the Tomcat run configuration and add this Java option:
+Optional overrides:
+
+```powershell
+$env:VOTING_DB_URL="jdbc:postgresql://localhost:5432/voting_system"
+$env:VOTING_DB_USER="postgres"
+```
+
+You can also use Java properties in your Tomcat run configuration:
 
 ```text
--Dvoting.db.password=your_pgadmin_password
+-Dvoting.db.password=your_postgresql_password
 ```
 
-## 5. Build the backend
+## 4. Build the Backend
 
-Open a terminal in:
-
-```text
-D:\First Java Project\Online_Voting_Sytem_Java\backend
-```
-
-Run:
+Open a terminal in the `backend` folder and run:
 
 ```powershell
 mvn clean package
@@ -77,53 +69,57 @@ mvn clean package
 This creates:
 
 ```text
-D:\First Java Project\Online_Voting_Sytem_Java\backend\target\online-voting-backend.war
+backend/target/online-voting-backend.war
 ```
 
-## 6. Run with Tomcat
+## 5. Run with Tomcat
 
-Deploy this WAR file to Tomcat:
+Deploy the WAR file to Tomcat:
 
 ```text
-backend\target\online-voting-backend.war
+backend/target/online-voting-backend.war
 ```
 
-After Tomcat starts, test the backend in your browser:
+After Tomcat starts, test:
 
 ```text
 http://localhost:8080/online-voting-backend/api/candidates
 ```
 
-You should see candidate data in JSON format.
-
-## 7. Open the frontend
-
-Open the frontend through Tomcat:
+Then open:
 
 ```text
 http://localhost:8080/online-voting-backend/templates/index.html
 ```
 
-Do not open the HTML file directly from Windows for backend testing. The frontend now calls `/api/...`, so it should be opened from the same Tomcat URL as the backend.
+Open the frontend through Tomcat for backend testing. Do not open the HTML file directly from Windows when testing login or voting.
 
-## 8. Create an admin login
+## 6. Admin Login
 
-Register one normal user from the frontend. Then in pgAdmin, run this with that user's phone number:
+After running `schema.sql`, the demo admin user can log in with any of these identifiers:
+
+```text
+admin
+admin@voting.local
+9800000000
+```
+
+Use the seeded demo password only for local testing, then change the admin password before publishing or deployment.
+
+To make another admin:
+
+1. Register normally from the frontend.
+2. In pgAdmin, run this with the registered phone number:
 
 ```sql
 UPDATE users SET role = 'ADMIN' WHERE mobile = '98XXXXXXXX';
 ```
 
-After that, use the admin login page. Put the same phone number in the username field and use the password you chose during registration.
-
-## Fixing red underlines in VS Code
+## 7. Fixing VS Code Red Underlines
 
 If imports like `jakarta.servlet` or `org.postgresql` are red:
 
 1. Make sure Maven is installed.
-2. In VS Code, right-click `backend/pom.xml`.
-3. Select **Update Project** or **Reload Project**.
-4. Open Command Palette and run **Java: Clean Java Language Server Workspace**.
-5. Restart VS Code.
-
-If the red underline says `package jakarta.servlet does not exist`, Maven dependencies have not downloaded yet.
+2. Right-click `backend/pom.xml`.
+3. Select Maven reload/update project.
+4. Restart VS Code if needed.
