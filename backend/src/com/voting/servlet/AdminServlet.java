@@ -72,7 +72,7 @@ public class AdminServlet extends HttpServlet {
 
     private boolean isAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         AuthUtil.AuthUser authUser = AuthUtil.currentUser(request);
-        if (authUser == null || !"ADMIN".equals(authUser.role())) {
+        if (authUser == null || authUser.role() == null || !"ADMIN".equalsIgnoreCase(authUser.role().trim())) {
             JsonUtil.write(response, HttpServletResponse.SC_FORBIDDEN, JsonUtil.error("Admin login is required."));
             return false;
         }
