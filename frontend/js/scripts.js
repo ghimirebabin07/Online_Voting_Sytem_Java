@@ -445,6 +445,12 @@ async function initAdminPage() {
 
   requireAuth(["ADMIN"]);
 
+  await loadAdminStats();
+  await renderAdminCandidates();
+  initCandidateForm();
+}
+
+async function loadAdminStats() {
   try {
     const stats = await apiRequest(API_ENDPOINTS.adminStats);
     setText("#totalVoters", stats.totalVoters ?? 0);
@@ -454,9 +460,6 @@ async function initAdminPage() {
   } catch (error) {
     showAlert(error.message, "error");
   }
-
-  await renderAdminCandidates();
-  initCandidateForm();
 }
 
 async function renderAdminCandidates() {
@@ -499,6 +502,7 @@ function initCandidateForm() {
 
       showAlert("Candidate saved successfully.", "success");
       form.reset();
+      await loadAdminStats();
       await renderAdminCandidates();
     } catch (error) {
       showAlert(error.message, "error");
