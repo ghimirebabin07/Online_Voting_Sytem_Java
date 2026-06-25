@@ -66,7 +66,8 @@ public class AdminServlet extends HttpServlet {
             );
             JsonUtil.write(response, HttpServletResponse.SC_CREATED, "{\"success\":true,\"candidate\":" + candidateJson(candidate) + "}");
         } catch (SQLException e) {
-            throw new ServletException("Could not save candidate", e);
+            JsonUtil.write(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    JsonUtil.error("Could not save candidate: " + e.getMessage()));
         }
     }
 

@@ -19,11 +19,14 @@ CREATE TABLE IF NOT EXISTS candidates (
     id SERIAL PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
     party VARCHAR(120) NOT NULL,
-    image_path VARCHAR(255),
-    symbol_path VARCHAR(255),
+    image_path TEXT,
+    symbol_path TEXT,
     description TEXT,
     vote_count INTEGER NOT NULL DEFAULT 0 CHECK (vote_count >= 0)
 );
+
+ALTER TABLE candidates ALTER COLUMN image_path TYPE TEXT;
+ALTER TABLE candidates ALTER COLUMN symbol_path TYPE TEXT;
 
 CREATE TABLE IF NOT EXISTS votes (
     id SERIAL PRIMARY KEY,

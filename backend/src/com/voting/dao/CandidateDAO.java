@@ -3,6 +3,7 @@ package com.voting.dao;
 import com.voting.config.DBConnection;
 import com.voting.model.Candidate;
 import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,23 +44,87 @@ public class CandidateDAO {
 
     public Candidate create(String name, String party, String imagePath, String symbolPath, String description) throws SQLException {
 
-        String sql = "INSERT INTO candidates(name, party, image_path, symbol_path, description) VALUES (?, ?, ?, ?, ?) "
-                + "RETURNING id, name, party, image_path, symbol_path, description, vote_count";
+        try (Connection con = DBConnection.getConnection()) {
+            SQLException lastError = null;
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+            for (int attempt = 0; attempt < 3; attempt++) {
+                try {
+                    return insertCandidate(con, name, party, imagePath, symbolPath, description);
+                } catch (SQLException e) {
+                    lastError = e;
 
+                    if ("23505".equals(e.getSQLState())) {
+                        resetCandidateSequence(con);
+                    } else if ("22001".equals(e.getSQLState())) {
+                        widenCandidateUrlColumns(con);
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+
+            throw lastError;
+        }
+    }
+
+    private Candidate insertCandidate(Connection con, String name, String party, String imagePath, String symbolPath, String description) throws SQLException {
+
+        String sql = "INSERT INTO candidates(name, party, image_path, symbol_path, description) VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, name);
             ps.setString(2, party);
             ps.setString(3, imagePath);
             ps.setString(4, symbolPath);
             ps.setString(5, description);
 
+            ps.executeUpdate();
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    return findById(con, keys.getInt(1));
+                }
+            }
+
+            throw new SQLException("Candidate was saved, but its generated id was not returned.");
+        }
+    }
+
+    private void resetCandidateSequence(Connection con) throws SQLException {
+
+        String sql = "SELECT setval('candidates_id_seq', COALESCE((SELECT MAX(id) FROM candidates), 0) + 1, false)";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.executeQuery();
+        }
+    }
+
+    private void widenCandidateUrlColumns(Connection con) throws SQLException {
+
+        String sql = "ALTER TABLE candidates "
+                + "ALTER COLUMN image_path TYPE TEXT, "
+                + "ALTER COLUMN symbol_path TYPE TEXT";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.executeUpdate();
+        }
+    }
+
+    private Candidate findById(Connection con, int id) throws SQLException {
+
+        String sql = "SELECT id, name, party, image_path, symbol_path, description, vote_count FROM candidates WHERE id = ?";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+
             try (ResultSet rs = ps.executeQuery()) {
-                rs.next();
-                return mapCandidate(rs);
+                if (rs.next()) {
+                    return mapCandidate(rs);
+                }
             }
         }
+
+        throw new SQLException("Saved candidate could not be loaded.");
     }
 
     public int totalVotes() throws SQLException {
