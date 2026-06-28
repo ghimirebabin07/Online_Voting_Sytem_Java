@@ -55,6 +55,7 @@ a {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -281,6 +282,7 @@ textarea {
 }
 
 .form-row input,
+.form-row select,
 .form-row textarea {
   width: 100%;
   min-height: 44px;
@@ -292,12 +294,22 @@ textarea {
   outline: none;
 }
 
+.form-row select {
+  cursor: pointer;
+}
+
+.form-row select:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .form-row textarea {
   min-height: 108px;
   resize: vertical;
 }
 
 .form-row input:focus,
+.form-row select:focus,
 .form-row textarea:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
@@ -402,6 +414,14 @@ textarea {
 .candidate-body h3 {
   margin: 2px 0 8px;
   font-size: 22px;
+}
+
+.candidate-location {
+  display: inline-block;
+  margin: 0 0 8px;
+  color: var(--secondary);
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .candidate-body p {
@@ -567,11 +587,66 @@ textarea {
   text-align: center;
 }
 
+.location-panel {
+  margin-bottom: 18px;
+}
+
+.location-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.developer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.developer-card {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.developer-card img {
+  width: 160px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.developer-card h2 {
+  margin: 6px 0 10px;
+  font-size: 28px;
+}
+
+.developer-card p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.developer-card span {
+  display: inline-flex;
+  padding: 8px 10px;
+  color: var(--secondary);
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-weight: 800;
+}
+
 @media (max-width: 900px) {
   .auth-page,
   .hero,
   .details-layout,
-  .profile-card {
+  .profile-card,
+  .developer-card {
     grid-template-columns: 1fr;
   }
 
@@ -581,6 +656,8 @@ textarea {
 
   .grid-3,
   .grid-2,
+  .location-grid,
+  .developer-grid,
   .result-summary,
   .profile-fields {
     grid-template-columns: 1fr;

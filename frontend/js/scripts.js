@@ -15,6 +15,145 @@ const API_ENDPOINTS = {
   adminCandidates: "/online-voting-backend/api/admin/candidates",
 };
 
+const NEPAL_LOCATION_DATA = [
+  {
+    province: "Koshi Province",
+    districts: [
+      { name: "Morang", municipalities: ["Biratnagar Metropolitan City"] },
+      { name: "Sunsari", municipalities: ["Itahari Sub-Metropolitan City"] },
+      { name: "Jhapa", municipalities: ["Birtamod Municipality"] },
+    ],
+  },
+  {
+    province: "Madhesh Province",
+    districts: [
+      { name: "Dhanusha", municipalities: ["Janakpurdham Sub-Metropolitan City"] },
+      { name: "Parsa", municipalities: ["Birgunj Metropolitan City"] },
+      { name: "Saptari", municipalities: ["Rajbiraj Municipality"] },
+    ],
+  },
+  {
+    province: "Bagmati Province",
+    districts: [
+      { name: "Kathmandu", municipalities: ["Kathmandu Metropolitan City"] },
+      { name: "Lalitpur", municipalities: ["Lalitpur Metropolitan City"] },
+      { name: "Chitwan", municipalities: ["Bharatpur Metropolitan City"] },
+    ],
+  },
+  {
+    province: "Gandaki Province",
+    districts: [
+      { name: "Kaski", municipalities: ["Pokhara Metropolitan City"] },
+      { name: "Gorkha", municipalities: ["Gorkha Municipality"] },
+      { name: "Nawalpur", municipalities: ["Kawasoti Municipality"] },
+    ],
+  },
+  {
+    province: "Lumbini Province",
+    districts: [
+      { name: "Rupandehi", municipalities: ["Butwal Sub-Metropolitan City"] },
+      { name: "Banke", municipalities: ["Nepalgunj Sub-Metropolitan City"] },
+      { name: "Dang", municipalities: ["Ghorahi Sub-Metropolitan City"] },
+    ],
+  },
+  {
+    province: "Karnali Province",
+    districts: [
+      { name: "Surkhet", municipalities: ["Birendranagar Municipality"] },
+      { name: "Jumla", municipalities: ["Chandannath Municipality"] },
+      { name: "Dailekh", municipalities: ["Narayan Municipality"] },
+    ],
+  },
+  {
+    province: "Sudurpashchim Province",
+    districts: [
+      { name: "Kailali", municipalities: ["Dhangadhi Sub-Metropolitan City"] },
+      { name: "Kanchanpur", municipalities: ["Bhimdatta Municipality"] },
+      { name: "Dadeldhura", municipalities: ["Amargadhi Municipality"] },
+    ],
+  },
+];
+
+const DEMO_CANDIDATES = [
+  {
+    id: "koshi-biratnagar-1",
+    name: "Aarati Koirala",
+    party: "Koshi Civic Alliance",
+    province: "Koshi Province",
+    district: "Morang",
+    municipality: "Biratnagar Metropolitan City",
+    imageUrl: "../Images/Profile.jpg",
+    symbolUrl: "../Images/Congress.jpg",
+    description: "Registered candidate for Biratnagar with a focus on transparent local services.",
+  },
+  {
+    id: "madhesh-janakpur-1",
+    name: "Ramesh Yadav",
+    party: "Madhesh Development Forum",
+    province: "Madhesh Province",
+    district: "Dhanusha",
+    municipality: "Janakpurdham Sub-Metropolitan City",
+    imageUrl: "../Images/Profile.jpg",
+    symbolUrl: "../Images/RSP.jpg",
+    description: "Registered candidate for Janakpurdham focused on public service delivery.",
+  },
+  {
+    id: "bagmati-kathmandu-1",
+    name: "Balen Shah",
+    party: "Independent",
+    province: "Bagmati Province",
+    district: "Kathmandu",
+    municipality: "Kathmandu Metropolitan City",
+    imageUrl: "../Images/Balen_.jpg",
+    symbolUrl: "../Images/Profile.jpg",
+    description: "Registered candidate for Kathmandu Metropolitan City.",
+  },
+  {
+    id: "gandaki-pokhara-1",
+    name: "Maya Gurung",
+    party: "Gandaki Janasewa Party",
+    province: "Gandaki Province",
+    district: "Kaski",
+    municipality: "Pokhara Metropolitan City",
+    imageUrl: "../Images/Profile.jpg",
+    symbolUrl: "../Images/Maoist.jpg",
+    description: "Registered candidate for Pokhara focused on youth and tourism-friendly governance.",
+  },
+  {
+    id: "lumbini-butwal-1",
+    name: "Prakash Thapa",
+    party: "Lumbini Reform Group",
+    province: "Lumbini Province",
+    district: "Rupandehi",
+    municipality: "Butwal Sub-Metropolitan City",
+    imageUrl: "../Images/Profile.jpg",
+    symbolUrl: "../Images/Congress.jpg",
+    description: "Registered candidate for Butwal with a focus on planned urban growth.",
+  },
+  {
+    id: "karnali-surkhet-1",
+    name: "Nirmala Shahi",
+    party: "Karnali People First",
+    province: "Karnali Province",
+    district: "Surkhet",
+    municipality: "Birendranagar Municipality",
+    imageUrl: "../Images/Profile.jpg",
+    symbolUrl: "../Images/RSP.jpg",
+    description: "Registered candidate for Birendranagar focused on access and local development.",
+  },
+  {
+    id: "sudur-dhangadhi-1",
+    name: "Deepak Rawal",
+    party: "Sudurpashchim Loktantrik Front",
+    province: "Sudurpashchim Province",
+    district: "Kailali",
+    municipality: "Dhangadhi Sub-Metropolitan City",
+    imageUrl: "../Images/Profile.jpg",
+    symbolUrl: "../Images/Maoist.jpg",
+    description: "Registered candidate for Dhangadhi with a focus on municipal service improvement.",
+  },
+];
+
 function getToken() {
   return sessionStorage.getItem(TOKEN_KEY);
 }
@@ -120,6 +259,46 @@ function serializeForm(form) {
   return Object.fromEntries(new FormData(form).entries());
 }
 
+function fillSelect(select, options, placeholder) {
+  if (!select) return;
+  select.innerHTML = [`<option value="">${placeholder}</option>`, ...options.map((option) => `<option value="${option}">${option}</option>`)].join("");
+}
+
+function initLocationSelector({ provinceId, districtId, municipalityId, onChange }) {
+  const provinceSelect = $(`#${provinceId}`);
+  const districtSelect = $(`#${districtId}`);
+  const municipalitySelect = $(`#${municipalityId}`);
+
+  if (!provinceSelect || !districtSelect || !municipalitySelect) return;
+
+  fillSelect(provinceSelect, NEPAL_LOCATION_DATA.map((item) => item.province), "Select province");
+
+  provinceSelect.addEventListener("change", () => {
+    const province = NEPAL_LOCATION_DATA.find((item) => item.province === provinceSelect.value);
+    fillSelect(districtSelect, province ? province.districts.map((district) => district.name) : [], "Select district");
+    fillSelect(municipalitySelect, [], "Select municipality");
+    districtSelect.disabled = !province;
+    municipalitySelect.disabled = true;
+    onChange?.();
+  });
+
+  districtSelect.addEventListener("change", () => {
+    const province = NEPAL_LOCATION_DATA.find((item) => item.province === provinceSelect.value);
+    const district = province?.districts.find((item) => item.name === districtSelect.value);
+    fillSelect(municipalitySelect, district ? district.municipalities : [], "Select municipality");
+    municipalitySelect.disabled = !district;
+    onChange?.();
+  });
+
+  municipalitySelect.addEventListener("change", () => onChange?.());
+}
+
+function candidateMatchesLocation(candidate, location) {
+  return candidate.province === location.province
+    && candidate.district === location.district
+    && candidate.municipality === location.municipality;
+}
+
 function validateForm(form) {
   if (form.checkValidity()) return true;
   form.reportValidity();
@@ -152,6 +331,9 @@ function normalizeCandidate(candidate) {
     symbolUrl: candidate.symbolUrl ?? candidate.symbol ?? "../Images/Profile.jpg",
     description: candidate.description ?? candidate.manifesto ?? "Candidate information will be updated by the election administrator.",
     votes: candidate.votes ?? candidate.totalVotes ?? 0,
+    province: candidate.province ?? candidate.provinceName ?? "",
+    district: candidate.district ?? candidate.districtName ?? "",
+    municipality: candidate.municipality ?? candidate.municipalityName ?? candidate.localLevel ?? "",
   };
 }
 
@@ -176,6 +358,12 @@ async function initRegisterPage() {
   const form = $("#registerForm");
   if (!form) return;
 
+  initLocationSelector({
+    provinceId: "registerProvince",
+    districtId: "registerDistrict",
+    municipalityId: "registerMunicipality",
+  });
+
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearAlert();
@@ -199,6 +387,9 @@ async function initRegisterPage() {
           phone: payload.phone,
           email: payload.email || null,
           voterId: payload.voterId,
+          province: payload.province,
+          district: payload.district,
+          municipality: payload.municipality,
           password: payload.password,
         }),
       });
@@ -292,25 +483,49 @@ async function initVotePage() {
   if (!container) return;
 
   requireAuth();
-  container.innerHTML = `<div class="empty-state">Loading candidates...</div>`;
+  container.innerHTML = `<div class="empty-state">Select your voting location to view registered candidates.</div>`;
 
   let candidates = [];
   try {
     candidates = await getCandidates();
-    if (!candidates.length) {
-      container.innerHTML = `<div class="empty-state">No candidates are currently available.</div>`;
-      return;
-    }
   } catch (error) {
-    container.innerHTML = `<div class="empty-state">Candidate service is unavailable.</div>`;
-    showAlert(error.message, "error");
-    return;
+    candidates = [];
+    showAlert("Backend candidate service is unavailable. Showing frontend demo candidates for layout preview.", "info");
   }
 
-  container.innerHTML = candidates.map((candidate) => candidateCard(candidate, true)).join("");
+  const renderForLocation = () => {
+    const location = {
+      province: $("#voteProvince")?.value,
+      district: $("#voteDistrict")?.value,
+      municipality: $("#voteMunicipality")?.value,
+    };
 
-  $all("[data-vote-id]").forEach((button) => {
-    button.addEventListener("click", () => submitVote(button.dataset.voteId, button));
+    if (!location.province || !location.district || !location.municipality) {
+      container.innerHTML = `<div class="empty-state">Select province, district, and municipality to view registered candidates.</div>`;
+      return;
+    }
+
+    const locationCandidates = candidates.filter((candidate) => candidateMatchesLocation(candidate, location));
+    const demoCandidates = DEMO_CANDIDATES.filter((candidate) => candidateMatchesLocation(candidate, location));
+    const visibleCandidates = locationCandidates.length ? locationCandidates : demoCandidates;
+
+    if (!visibleCandidates.length) {
+      container.innerHTML = `<div class="empty-state">No registered candidates found for ${location.municipality}, ${location.district}.</div>`;
+      return;
+    }
+
+    container.innerHTML = visibleCandidates.map((candidate) => candidateCard(candidate, true)).join("");
+
+    $all("[data-vote-id]").forEach((button) => {
+      button.addEventListener("click", () => submitVote(button.dataset.voteId, button));
+    });
+  };
+
+  initLocationSelector({
+    provinceId: "voteProvince",
+    districtId: "voteDistrict",
+    municipalityId: "voteMunicipality",
+    onChange: renderForLocation,
   });
 }
 
@@ -326,6 +541,7 @@ function candidateCard(candidate, withVoteAction = false) {
       <div class="candidate-body">
         <p class="eyebrow">${candidate.party}</p>
         <h3>${candidate.name}</h3>
+        ${candidate.municipality ? `<span class="candidate-location">${candidate.municipality}, ${candidate.district}</span>` : ""}
         <p>${candidate.description}</p>
       </div>
       <div class="candidate-actions">
@@ -424,6 +640,9 @@ async function initProfilePage() {
   setText("#profileEmail", user.email || "-");
   setText("#profileVoterId", user.voterId || "-");
   setText("#profileStatus", user.hasVoted ? "Vote submitted" : "Vote pending");
+  setText("#profileProvince", user.province || "-");
+  setText("#profileDistrict", user.district || "-");
+  setText("#profileMunicipality", user.municipality || "-");
 
   try {
     const profile = await apiRequest(API_ENDPOINTS.me);
@@ -434,6 +653,9 @@ async function initProfilePage() {
     setText("#profileEmail", account.email || "-");
     setText("#profileVoterId", account.voterId || "-");
     setText("#profileStatus", account.hasVoted ? "Vote submitted" : "Vote pending");
+    setText("#profileProvince", account.province || "-");
+    setText("#profileDistrict", account.district || "-");
+    setText("#profileMunicipality", account.municipality || "-");
   } catch (error) {
     showAlert(error.message, "error");
   }
