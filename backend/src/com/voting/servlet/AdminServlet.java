@@ -55,6 +55,9 @@ public class AdminServlet extends HttpServlet {
         String image = JsonUtil.value(body, request, "image", "imageUrl", "imagePath");
         String symbol = JsonUtil.value(body, request, "symbol", "symbolUrl", "symbolPath");
         String description = JsonUtil.value(body, request, "description", "manifesto");
+        String province = JsonUtil.value(body, request, "province", "provinceName");
+        String district = JsonUtil.value(body, request, "district", "districtName");
+        String municipality = JsonUtil.value(body, request, "municipality", "municipalityName", "localLevel");
 
         try {
             Candidate candidate = candidateDAO.create(
@@ -62,7 +65,10 @@ public class AdminServlet extends HttpServlet {
                     party.trim(),
                     defaultValue(image, "../Images/Profile.jpg"),
                     defaultValue(symbol, "../Images/Profile.jpg"),
-                    defaultValue(description, "Candidate information will be updated by the election administrator.")
+                    defaultValue(description, "Candidate information will be updated by the election administrator."),
+                    defaultValue(province, "Bagmati Province"),
+                    defaultValue(district, "Kathmandu"),
+                    defaultValue(municipality, "Kathmandu Metropolitan City")
             );
             JsonUtil.write(response, HttpServletResponse.SC_CREATED, "{\"success\":true,\"candidate\":" + candidateJson(candidate) + "}");
         } catch (SQLException e) {
@@ -88,6 +94,9 @@ public class AdminServlet extends HttpServlet {
                 + "\"image\":\"" + JsonUtil.escape(candidate.getImagePath()) + "\","
                 + "\"symbol\":\"" + JsonUtil.escape(candidate.getSymbolPath()) + "\","
                 + "\"description\":\"" + JsonUtil.escape(candidate.getDescription()) + "\","
+                + "\"province\":\"" + JsonUtil.escape(candidate.getProvince()) + "\","
+                + "\"district\":\"" + JsonUtil.escape(candidate.getDistrict()) + "\","
+                + "\"municipality\":\"" + JsonUtil.escape(candidate.getMunicipality()) + "\","
                 + "\"votes\":" + candidate.getVoteCount()
                 + "}";
     }
