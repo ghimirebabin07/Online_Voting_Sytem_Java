@@ -64,6 +64,9 @@ public class LoginServlet extends HttpServlet {
                 + "\"mobile\":\"" + JsonUtil.escape(user.getMobile()) + "\","
                 + "\"email\":\"" + JsonUtil.escape(user.getEmail()) + "\","
                 + "\"voterId\":\"" + JsonUtil.escape(user.getVoterId()) + "\","
+                + "\"province\":\"" + JsonUtil.escape(user.getProvince()) + "\","
+                + "\"district\":\"" + JsonUtil.escape(user.getDistrict()) + "\","
+                + "\"municipality\":\"" + JsonUtil.escape(user.getMunicipality()) + "\","
                 + "\"role\":\"" + JsonUtil.escape(role) + "\","
                 + "\"hasVoted\":" + user.isHasVoted()
                 + "}"
