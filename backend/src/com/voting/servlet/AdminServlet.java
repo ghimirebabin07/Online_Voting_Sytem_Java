@@ -46,29 +46,28 @@ public class AdminServlet extends HttpServlet {
         Map<String, String> body = JsonUtil.readObject(request);
         String name = JsonUtil.value(body, request, "name", "fullName", "candidateName");
         String party = JsonUtil.value(body, request, "party", "partyName");
-
-        if (isBlank(name) || isBlank(party)) {
-            JsonUtil.write(response, HttpServletResponse.SC_BAD_REQUEST, JsonUtil.error("Candidate name and party are required."));
-            return;
-        }
-
-        String image = JsonUtil.value(body, request, "image", "imageUrl", "imagePath");
-        String symbol = JsonUtil.value(body, request, "symbol", "symbolUrl", "symbolPath");
+        String image = JsonUtil.value(body, request, "image", "imagePath", "imageUrl");
+        String symbol = JsonUtil.value(body, request, "symbol", "symbolPath", "symbolUrl");
         String description = JsonUtil.value(body, request, "description", "manifesto");
         String province = JsonUtil.value(body, request, "province", "provinceName");
         String district = JsonUtil.value(body, request, "district", "districtName");
         String municipality = JsonUtil.value(body, request, "municipality", "municipalityName", "localLevel");
 
+        if (isBlank(name) || isBlank(party) || isBlank(province) || isBlank(district) || isBlank(municipality)) {
+            JsonUtil.write(response, HttpServletResponse.SC_BAD_REQUEST, JsonUtil.error("Candidate name, party, and region are required."));
+            return;
+        }
+
         try {
             Candidate candidate = candidateDAO.create(
                     name.trim(),
                     party.trim(),
-                    defaultValue(image, "../Images/Profile.jpg"),
-                    defaultValue(symbol, "../Images/Profile.jpg"),
-                    defaultValue(description, "Candidate information will be updated by the election administrator."),
-                    defaultValue(province, "Bagmati Province"),
-                    defaultValue(district, "Kathmandu"),
-                    defaultValue(municipality, "Kathmandu Metropolitan City")
+                    valueOrDefault(image, "../Images/Profile.jpg"),
+                    valueOrDefault(symbol, "../Images/Profile.jpg"),
+                    valueOrDefault(description, "Candidate information will be updated by the election administrator."),
+                    province.trim(),
+                    district.trim(),
+                    municipality.trim()
             );
             JsonUtil.write(response, HttpServletResponse.SC_CREATED, "{\"success\":true,\"candidate\":" + candidateJson(candidate) + "}");
         } catch (SQLException e) {
@@ -101,11 +100,11 @@ public class AdminServlet extends HttpServlet {
                 + "}";
     }
 
-    private String defaultValue(String value, String fallback) {
-        return isBlank(value) ? fallback : value.trim();
-    }
-
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    private String valueOrDefault(String value, String defaultValue) {
+        return isBlank(value) ? defaultValue : value.trim();
     }
 }
