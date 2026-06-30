@@ -21,10 +21,14 @@ public class RegisterServlet extends HttpServlet {
         String mobile = JsonUtil.value(body, request, "mobile", "phone");
         String email = JsonUtil.value(body, request, "email");
         String voterId = JsonUtil.value(body, request, "voterId", "voter_id");
+        String province = JsonUtil.value(body, request, "province", "provinceName");
+        String district = JsonUtil.value(body, request, "district", "districtName");
+        String municipality = JsonUtil.value(body, request, "municipality", "municipalityName", "localLevel");
         String password = JsonUtil.value(body, request, "password");
 
-        if (isBlank(fullName) || isBlank(mobile) || isBlank(password)) {
-            JsonUtil.write(response, HttpServletResponse.SC_BAD_REQUEST, JsonUtil.error("Full name, mobile number, and password are required."));
+        if (isBlank(fullName) || isBlank(mobile) || isBlank(password)
+                || isBlank(province) || isBlank(district) || isBlank(municipality)) {
+            JsonUtil.write(response, HttpServletResponse.SC_BAD_REQUEST, JsonUtil.error("Full name, mobile number, voting location, and password are required."));
             return;
         }
 
@@ -34,7 +38,16 @@ public class RegisterServlet extends HttpServlet {
         }
 
         try {
-            userDAO.register(fullName.trim(), mobile.trim(), blankToNull(email), blankToNull(voterId), password);
+            userDAO.register(
+                    fullName.trim(),
+                    mobile.trim(),
+                    blankToNull(email),
+                    blankToNull(voterId),
+                    province.trim(),
+                    district.trim(),
+                    municipality.trim(),
+                    password
+            );
             JsonUtil.write(response, HttpServletResponse.SC_CREATED, JsonUtil.success("Registration successful."));
         } catch (SQLException e) {
             if ("23505".equals(e.getSQLState())) {
