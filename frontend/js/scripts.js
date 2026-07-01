@@ -8,151 +8,13 @@ const API_ENDPOINTS = {
   adminLogin: "/online-voting-backend/api/auth/admin/login",
   logout: "/online-voting-backend/api/auth/logout",
   me: "/online-voting-backend/api/users/me",
+  locations: "/online-voting-backend/api/locations",
   candidates: "/online-voting-backend/api/candidates",
   vote: "/online-voting-backend/api/votes",
   results: "/online-voting-backend/api/results",
   adminStats: "/online-voting-backend/api/admin/stats",
   adminCandidates: "/online-voting-backend/api/admin/candidates",
 };
-
-const NEPAL_LOCATION_DATA = [
-  {
-    province: "Koshi Province",
-    districts: [
-      { name: "Morang", municipalities: ["Biratnagar Metropolitan City"] },
-      { name: "Sunsari", municipalities: ["Itahari Sub-Metropolitan City"] },
-      { name: "Jhapa", municipalities: ["Birtamod Municipality"] },
-    ],
-  },
-  {
-    province: "Madhesh Province",
-    districts: [
-      { name: "Dhanusha", municipalities: ["Janakpurdham Sub-Metropolitan City"] },
-      { name: "Parsa", municipalities: ["Birgunj Metropolitan City"] },
-      { name: "Saptari", municipalities: ["Rajbiraj Municipality"] },
-    ],
-  },
-  {
-    province: "Bagmati Province",
-    districts: [
-      { name: "Kathmandu", municipalities: ["Kathmandu Metropolitan City"] },
-      { name: "Lalitpur", municipalities: ["Lalitpur Metropolitan City"] },
-      { name: "Chitwan", municipalities: ["Bharatpur Metropolitan City"] },
-    ],
-  },
-  {
-    province: "Gandaki Province",
-    districts: [
-      { name: "Kaski", municipalities: ["Pokhara Metropolitan City"] },
-      { name: "Gorkha", municipalities: ["Gorkha Municipality"] },
-      { name: "Nawalpur", municipalities: ["Kawasoti Municipality"] },
-    ],
-  },
-  {
-    province: "Lumbini Province",
-    districts: [
-      { name: "Rupandehi", municipalities: ["Butwal Sub-Metropolitan City"] },
-      { name: "Banke", municipalities: ["Nepalgunj Sub-Metropolitan City"] },
-      { name: "Dang", municipalities: ["Ghorahi Sub-Metropolitan City"] },
-    ],
-  },
-  {
-    province: "Karnali Province",
-    districts: [
-      { name: "Surkhet", municipalities: ["Birendranagar Municipality"] },
-      { name: "Jumla", municipalities: ["Chandannath Municipality"] },
-      { name: "Dailekh", municipalities: ["Narayan Municipality"] },
-    ],
-  },
-  {
-    province: "Sudurpashchim Province",
-    districts: [
-      { name: "Kailali", municipalities: ["Dhangadhi Sub-Metropolitan City"] },
-      { name: "Kanchanpur", municipalities: ["Bhimdatta Municipality"] },
-      { name: "Dadeldhura", municipalities: ["Amargadhi Municipality"] },
-    ],
-  },
-];
-
-const DEMO_CANDIDATES = [
-  {
-    id: "koshi-biratnagar-1",
-    name: "Aarati Koirala",
-    party: "Koshi Civic Alliance",
-    province: "Koshi Province",
-    district: "Morang",
-    municipality: "Biratnagar Metropolitan City",
-    imageUrl: "../Images/Profile.jpg",
-    symbolUrl: "../Images/Congress.jpg",
-    description: "Registered candidate for Biratnagar with a focus on transparent local services.",
-  },
-  {
-    id: "madhesh-janakpur-1",
-    name: "Ramesh Yadav",
-    party: "Madhesh Development Forum",
-    province: "Madhesh Province",
-    district: "Dhanusha",
-    municipality: "Janakpurdham Sub-Metropolitan City",
-    imageUrl: "../Images/Profile.jpg",
-    symbolUrl: "../Images/RSP.jpg",
-    description: "Registered candidate for Janakpurdham focused on public service delivery.",
-  },
-  {
-    id: "bagmati-kathmandu-1",
-    name: "Balen Shah",
-    party: "Independent",
-    province: "Bagmati Province",
-    district: "Kathmandu",
-    municipality: "Kathmandu Metropolitan City",
-    imageUrl: "../Images/Balen_.jpg",
-    symbolUrl: "../Images/Profile.jpg",
-    description: "Registered candidate for Kathmandu Metropolitan City.",
-  },
-  {
-    id: "gandaki-pokhara-1",
-    name: "Maya Gurung",
-    party: "Gandaki Janasewa Party",
-    province: "Gandaki Province",
-    district: "Kaski",
-    municipality: "Pokhara Metropolitan City",
-    imageUrl: "../Images/Profile.jpg",
-    symbolUrl: "../Images/Maoist.jpg",
-    description: "Registered candidate for Pokhara focused on youth and tourism-friendly governance.",
-  },
-  {
-    id: "lumbini-butwal-1",
-    name: "Prakash Thapa",
-    party: "Lumbini Reform Group",
-    province: "Lumbini Province",
-    district: "Rupandehi",
-    municipality: "Butwal Sub-Metropolitan City",
-    imageUrl: "../Images/Profile.jpg",
-    symbolUrl: "../Images/Congress.jpg",
-    description: "Registered candidate for Butwal with a focus on planned urban growth.",
-  },
-  {
-    id: "karnali-surkhet-1",
-    name: "Nirmala Shahi",
-    party: "Karnali People First",
-    province: "Karnali Province",
-    district: "Surkhet",
-    municipality: "Birendranagar Municipality",
-    imageUrl: "../Images/Profile.jpg",
-    symbolUrl: "../Images/RSP.jpg",
-    description: "Registered candidate for Birendranagar focused on access and local development.",
-  },
-  {
-    id: "sudur-dhangadhi-1",
-    name: "Deepak Rawal",
-    party: "Sudurpashchim Loktantrik Front",
-    province: "Sudurpashchim Province",
-    district: "Kailali",
-    municipality: "Dhangadhi Sub-Metropolitan City",
-    imageUrl: "../Images/Profile.jpg",
-    symbolUrl: "../Images/Maoist.jpg",
-    description: "Registered candidate for Dhangadhi with a focus on municipal service improvement.",
-  },
-];
 
 function getToken() {
   return sessionStorage.getItem(TOKEN_KEY);
@@ -264,17 +126,62 @@ function fillSelect(select, options, placeholder) {
   select.innerHTML = [`<option value="">${placeholder}</option>`, ...options.map((option) => `<option value="${option}">${option}</option>`)].join("");
 }
 
-function initLocationSelector({ provinceId, districtId, municipalityId, onChange }) {
+let locationDataPromise = null;
+
+function groupLocations(locations) {
+  return locations.reduce((grouped, location) => {
+    let province = grouped.find((item) => item.province === location.province);
+    if (!province) {
+      province = { province: location.province, districts: [] };
+      grouped.push(province);
+    }
+
+    let district = province.districts.find((item) => item.name === location.district);
+    if (!district) {
+      district = { name: location.district, municipalities: [] };
+      province.districts.push(district);
+    }
+
+    if (!district.municipalities.includes(location.municipality)) {
+      district.municipalities.push(location.municipality);
+    }
+
+    return grouped;
+  }, []);
+}
+
+async function getLocationData() {
+  if (!locationDataPromise) {
+    locationDataPromise = apiRequest(API_ENDPOINTS.locations)
+      .then((data) => groupLocations(data?.locations || data || []));
+  }
+
+  return locationDataPromise;
+}
+
+async function initLocationSelector({ provinceId, districtId, municipalityId, onChange }) {
   const provinceSelect = $(`#${provinceId}`);
   const districtSelect = $(`#${districtId}`);
   const municipalitySelect = $(`#${municipalityId}`);
 
   if (!provinceSelect || !districtSelect || !municipalitySelect) return;
 
-  fillSelect(provinceSelect, NEPAL_LOCATION_DATA.map((item) => item.province), "Select province");
+  fillSelect(provinceSelect, [], "Loading provinces");
+  districtSelect.disabled = true;
+  municipalitySelect.disabled = true;
+
+  let locationData = [];
+  try {
+    locationData = await getLocationData();
+    fillSelect(provinceSelect, locationData.map((item) => item.province), "Select province");
+  } catch (error) {
+    fillSelect(provinceSelect, [], "Locations unavailable");
+    showAlert(error.message, "error");
+    return;
+  }
 
   provinceSelect.addEventListener("change", () => {
-    const province = NEPAL_LOCATION_DATA.find((item) => item.province === provinceSelect.value);
+    const province = locationData.find((item) => item.province === provinceSelect.value);
     fillSelect(districtSelect, province ? province.districts.map((district) => district.name) : [], "Select district");
     fillSelect(municipalitySelect, [], "Select municipality");
     districtSelect.disabled = !province;
@@ -283,7 +190,7 @@ function initLocationSelector({ provinceId, districtId, municipalityId, onChange
   });
 
   districtSelect.addEventListener("change", () => {
-    const province = NEPAL_LOCATION_DATA.find((item) => item.province === provinceSelect.value);
+    const province = locationData.find((item) => item.province === provinceSelect.value);
     const district = province?.districts.find((item) => item.name === districtSelect.value);
     fillSelect(municipalitySelect, district ? district.municipalities : [], "Select municipality");
     municipalitySelect.disabled = !district;
@@ -294,9 +201,47 @@ function initLocationSelector({ provinceId, districtId, municipalityId, onChange
 }
 
 function candidateMatchesLocation(candidate, location) {
+  if (!candidate.province && !candidate.district && !candidate.municipality) {
+    return true;
+  }
+
   return candidate.province === location.province
     && candidate.district === location.district
     && candidate.municipality === location.municipality;
+}
+
+function userLocation(user = {}) {
+  return {
+    province: user.province || "",
+    district: user.district || "",
+    municipality: user.municipality || "",
+  };
+}
+
+function hasCompleteLocation(location = {}) {
+  return Boolean(location.province && location.district && location.municipality);
+}
+
+function formatLocation(location = {}) {
+  if (!hasCompleteLocation(location)) {
+    return "Region not found";
+  }
+
+  return `${location.municipality}, ${location.district}, ${location.province}`;
+}
+
+async function loadCurrentUser() {
+  const storedUser = getStoredUser() || {};
+
+  try {
+    const profile = await apiRequest(API_ENDPOINTS.me);
+    const account = profile?.user || profile || {};
+    const mergedUser = { ...storedUser, ...account };
+    sessionStorage.setItem(USER_KEY, JSON.stringify(mergedUser));
+    return mergedUser;
+  } catch {
+    return storedUser;
+  }
 }
 
 function validateForm(form) {
@@ -346,6 +291,9 @@ function normalizeResult(result) {
     percent: Number(result.percent ?? result.percentage ?? 0),
     imageUrl: result.imageUrl ?? result.image ?? "../Images/Profile.jpg",
     symbolUrl: result.symbolUrl ?? result.symbol ?? "../Images/Profile.jpg",
+    province: result.province ?? result.provinceName ?? "",
+    district: result.district ?? result.districtName ?? "",
+    municipality: result.municipality ?? result.municipalityName ?? result.localLevel ?? "",
   };
 }
 
@@ -482,50 +430,40 @@ async function initVotePage() {
   const container = $("#candidateContainer");
   if (!container) return;
 
-  requireAuth();
-  container.innerHTML = `<div class="empty-state">Select your voting location to view registered candidates.</div>`;
+  const authUser = requireAuth();
+  if (!authUser) return;
+
+  container.innerHTML = `<div class="empty-state">Loading candidates for your registered voting area...</div>`;
+  const user = await loadCurrentUser();
+  const location = userLocation(user);
+  setText("#voteLocationText", formatLocation(location));
+
+  if (!hasCompleteLocation(location)) {
+    container.innerHTML = `<div class="empty-state">Your account does not have a complete voting area. Please register with province, district, and municipality before voting.</div>`;
+    return;
+  }
 
   let candidates = [];
   try {
     candidates = await getCandidates();
   } catch (error) {
-    candidates = [];
-    showAlert("Backend candidate service is unavailable. Showing frontend demo candidates for layout preview.", "info");
+    container.innerHTML = `<div class="empty-state">Candidate service is unavailable. Please try again later.</div>`;
+    showAlert(error.message, "error");
+    return;
   }
 
-  const renderForLocation = () => {
-    const location = {
-      province: $("#voteProvince")?.value,
-      district: $("#voteDistrict")?.value,
-      municipality: $("#voteMunicipality")?.value,
-    };
+  const locationCandidates = candidates.filter((candidate) => candidateMatchesLocation(candidate, location));
+  const visibleCandidates = locationCandidates;
 
-    if (!location.province || !location.district || !location.municipality) {
-      container.innerHTML = `<div class="empty-state">Select province, district, and municipality to view registered candidates.</div>`;
-      return;
-    }
+  if (!visibleCandidates.length) {
+    container.innerHTML = `<div class="empty-state">No registered candidates found for ${location.municipality}, ${location.district}.</div>`;
+    return;
+  }
 
-    const locationCandidates = candidates.filter((candidate) => candidateMatchesLocation(candidate, location));
-    const demoCandidates = DEMO_CANDIDATES.filter((candidate) => candidateMatchesLocation(candidate, location));
-    const visibleCandidates = locationCandidates.length ? locationCandidates : demoCandidates;
+  container.innerHTML = visibleCandidates.map((candidate) => candidateCard(candidate, true)).join("");
 
-    if (!visibleCandidates.length) {
-      container.innerHTML = `<div class="empty-state">No registered candidates found for ${location.municipality}, ${location.district}.</div>`;
-      return;
-    }
-
-    container.innerHTML = visibleCandidates.map((candidate) => candidateCard(candidate, true)).join("");
-
-    $all("[data-vote-id]").forEach((button) => {
-      button.addEventListener("click", () => submitVote(button.dataset.voteId, button));
-    });
-  };
-
-  initLocationSelector({
-    provinceId: "voteProvince",
-    districtId: "voteDistrict",
-    municipalityId: "voteMunicipality",
-    onChange: renderForLocation,
+  $all("[data-vote-id]").forEach((button) => {
+    button.addEventListener("click", () => submitVote(button.dataset.voteId, button));
   });
 }
 
@@ -586,30 +524,60 @@ async function initResultsPage() {
   container.innerHTML = `<div class="empty-state">Loading results...</div>`;
 
   try {
+    const storedUser = getStoredUser() || {};
     const data = await apiRequest(API_ENDPOINTS.results);
     const results = (data?.candidates || data?.results || data || []).map(normalizeResult);
-    renderResults(results, data);
+
+    if (storedUser.role === "ADMIN") {
+      const filter = $("#resultRegionFilter");
+      if (filter) filter.hidden = false;
+
+      initLocationSelector({
+        provinceId: "resultProvince",
+        districtId: "resultDistrict",
+        municipalityId: "resultMunicipality",
+        onChange: () => renderResults(results, data, selectedLocation("resultProvince", "resultDistrict", "resultMunicipality")),
+      });
+
+      renderResults(results, data, null);
+      return;
+    }
+
+    const user = await loadCurrentUser();
+    const location = userLocation(user);
+    const locationSummary = $("#resultVoterLocation");
+    if (locationSummary) locationSummary.hidden = false;
+    setText("#resultLocationText", formatLocation(location));
+    renderResults(results, data, location);
   } catch (error) {
     container.innerHTML = `<div class="empty-state">Results are not available yet.</div>`;
     showAlert(error.message, "error");
   }
 }
 
-function renderResults(results, data = {}) {
+function renderResults(results, data = {}, location = null) {
   const container = $("#candidateResults");
-  const totalVotes = results.reduce((sum, item) => sum + item.votes, 0);
-  const winner = results.slice().sort((a, b) => b.votes - a.votes)[0];
+  const visibleResults = location && hasCompleteLocation(location)
+    ? results.filter((result) => candidateMatchesLocation(result, location))
+    : [];
+  const totalVotes = visibleResults.reduce((sum, item) => sum + item.votes, 0);
+  const winner = visibleResults.slice().sort((a, b) => b.votes - a.votes)[0];
 
-  setText("#totalVotes", data.totalVotes ?? totalVotes);
+  setText("#totalVotes", totalVotes);
   setText("#winnerName", winner ? winner.name : "Pending");
   setText("#winnerParty", winner ? winner.party : "Results pending");
 
-  if (!results.length) {
-    container.innerHTML = `<div class="empty-state">No votes have been counted yet.</div>`;
+  if (!location || !hasCompleteLocation(location)) {
+    container.innerHTML = `<div class="empty-state">Select a province, district, and municipality to view that region's result.</div>`;
     return;
   }
 
-  container.innerHTML = results
+  if (!visibleResults.length) {
+    container.innerHTML = `<div class="empty-state">No candidates found for ${location.municipality}, ${location.district}.</div>`;
+    return;
+  }
+
+  container.innerHTML = visibleResults
     .sort((a, b) => b.votes - a.votes)
     .map((result) => {
       const percent = totalVotes ? ((result.votes / totalVotes) * 100).toFixed(1) : result.percent.toFixed(1);
@@ -668,8 +636,9 @@ async function initAdminPage() {
   requireAuth(["ADMIN"]);
 
   await loadAdminStats();
-  await renderAdminCandidates();
+  initAdminCandidateFilter();
   initCandidateForm();
+  await renderAdminCandidates();
 }
 
 async function loadAdminStats() {
@@ -688,6 +657,12 @@ async function renderAdminCandidates() {
   const container = $("#adminCandidateList");
   if (!container) return;
 
+  const location = selectedLocation("adminFilterProvince", "adminFilterDistrict", "adminFilterMunicipality");
+  if (!location.province || !location.district || !location.municipality) {
+    container.innerHTML = `<div class="empty-state">Select a province, district, and municipality to view candidates for that region.</div>`;
+    return;
+  }
+
   container.innerHTML = `<div class="empty-state">Loading candidates...</div>`;
   let candidates = [];
   try {
@@ -698,14 +673,21 @@ async function renderAdminCandidates() {
     return;
   }
 
-  container.innerHTML = candidates.length
-    ? candidates.map((candidate) => candidateCard(candidate, false)).join("")
-    : `<div class="empty-state">No candidates have been added yet.</div>`;
+  const regionCandidates = candidates.filter((candidate) => candidateMatchesLocation(candidate, location));
+  container.innerHTML = regionCandidates.length
+    ? regionCandidates.map((candidate) => candidateCard(candidate, false)).join("")
+    : `<div class="empty-state">No candidates found for ${location.municipality}, ${location.district}.</div>`;
 }
 
 function initCandidateForm() {
   const form = $("#candidateForm");
   if (!form) return;
+
+  initLocationSelector({
+    provinceId: "candidateProvince",
+    districtId: "candidateDistrict",
+    municipalityId: "candidateMunicipality",
+  });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -724,6 +706,7 @@ function initCandidateForm() {
 
       showAlert("Candidate saved successfully.", "success");
       form.reset();
+      resetLocationSelector("candidateDistrict", "candidateMunicipality");
       await loadAdminStats();
       await renderAdminCandidates();
     } catch (error) {
@@ -732,6 +715,32 @@ function initCandidateForm() {
       setButtonLoading(submit, false);
     }
   });
+}
+
+function initAdminCandidateFilter() {
+  initLocationSelector({
+    provinceId: "adminFilterProvince",
+    districtId: "adminFilterDistrict",
+    municipalityId: "adminFilterMunicipality",
+    onChange: renderAdminCandidates,
+  });
+}
+
+function selectedLocation(provinceId, districtId, municipalityId) {
+  return {
+    province: $(`#${provinceId}`)?.value,
+    district: $(`#${districtId}`)?.value,
+    municipality: $(`#${municipalityId}`)?.value,
+  };
+}
+
+function resetLocationSelector(districtId, municipalityId) {
+  fillSelect($(`#${districtId}`), [], "Select district");
+  fillSelect($(`#${municipalityId}`), [], "Select municipality");
+  const district = $(`#${districtId}`);
+  const municipality = $(`#${municipalityId}`);
+  if (district) district.disabled = true;
+  if (municipality) municipality.disabled = true;
 }
 
 async function logout() {
