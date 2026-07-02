@@ -12,9 +12,12 @@ const API_ENDPOINTS = {
   candidates: "/online-voting-backend/api/candidates",
   vote: "/online-voting-backend/api/votes",
   results: "/online-voting-backend/api/results",
+  developers: "/online-voting-backend/api/developers",
   adminStats: "/online-voting-backend/api/admin/stats",
   adminCandidates: "/online-voting-backend/api/admin/candidates",
 };
+
+const DEFAULT_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Crect width='160' height='160' fill='%23e2e8f0'/%3E%3Ccircle cx='80' cy='62' r='30' fill='%2394a3b8'/%3E%3Cpath d='M30 140c8-30 28-46 50-46s42 16 50 46' fill='%2394a3b8'/%3E%3C/svg%3E";
 
 function getToken() {
   return sessionStorage.getItem(TOKEN_KEY);
@@ -80,6 +83,15 @@ function $all(selector, root = document) {
   return Array.from(root.querySelectorAll(selector));
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 function setText(selector, value) {
   const element = $(selector);
   if (element) element.textContent = value ?? "";
@@ -119,6 +131,96 @@ function setButtonLoading(button, isLoading, label = "Please wait") {
 
 function serializeForm(form) {
   return Object.fromEntries(new FormData(form).entries());
+}
+
+const MAX_CANDIDATE_IMAGE_SIZE = 1024 * 1024;
+
+function readImageFile(file, label) {
+  return new Promise((resolve, reject) => {
+    if (!file || file.size === 0) {
+      resolve("");
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      reject(new Error(`${label} must be an image file.`));
+      return;
+    }
+
+    if (file.size > MAX_CANDIDATE_IMAGE_SIZE) {
+      reject(new Error(`${label} must be 1 MB or smaller.`));
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(reader.result));
+    reader.addEventListener("error", () => reject(new Error(`${label} could not be read.`)));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function candidatePayloadFromForm(form) {
+  const payload = serializeForm(form);
+  const imageFile = form.elements.image?.files?.[0];
+  const symbolFile = form.elements.symbol?.files?.[0];
+
+  payload.image = await readImageFile(imageFile, "Candidate image");
+  payload.symbol = await readImageFile(symbolFile, "Party symbol image");
+
+  return payload;
+}
+
+function initImagePreviews(form) {
+  $all("[data-file-trigger]", form).forEach((button) => {
+    button.addEventListener("click", () => {
+      $(`#${button.dataset.fileTrigger}`, form)?.click();
+    });
+  });
+
+  $all("input[type='file'][data-preview]", form).forEach((input) => {
+    input.addEventListener("change", () => {
+      const preview = $(`#${input.dataset.preview}`);
+      const fileName = $(`#${input.dataset.fileName}`);
+      const file = input.files?.[0];
+      const isImage = file?.type.startsWith("image/");
+
+      if (fileName) {
+        fileName.textContent = file?.name || "No image selected";
+      }
+
+      if (!preview) return;
+      if (!file || !isImage) {
+        preview.hidden = true;
+        preview.removeAttribute("src");
+        if (file && !isImage) {
+          input.value = "";
+          if (fileName) {
+            fileName.textContent = "Please choose an image file";
+          }
+        }
+        return;
+      }
+
+      preview.src = URL.createObjectURL(file);
+      preview.hidden = false;
+    });
+  });
+}
+
+function resetImagePreviews(form) {
+  $all("input[type='file'][data-preview]", form).forEach((input) => {
+    const preview = $(`#${input.dataset.preview}`);
+    const fileName = $(`#${input.dataset.fileName}`);
+
+    if (fileName) {
+      fileName.textContent = "No image selected";
+    }
+
+    if (preview) {
+      preview.hidden = true;
+      preview.removeAttribute("src");
+    }
+  });
 }
 
 function fillSelect(select, options, placeholder) {
@@ -272,8 +374,8 @@ function normalizeCandidate(candidate) {
     id: candidate.id ?? candidate.candidateId,
     name: candidate.name ?? candidate.fullName ?? "Unnamed Candidate",
     party: candidate.party ?? candidate.partyName ?? "Independent",
-    imageUrl: candidate.imageUrl ?? candidate.image ?? "../Images/Profile.jpg",
-    symbolUrl: candidate.symbolUrl ?? candidate.symbol ?? "../Images/Profile.jpg",
+    imageUrl: candidate.imageUrl ?? candidate.image ?? DEFAULT_IMAGE,
+    symbolUrl: candidate.symbolUrl ?? candidate.symbol ?? DEFAULT_IMAGE,
     description: candidate.description ?? candidate.manifesto ?? "Candidate information will be updated by the election administrator.",
     votes: candidate.votes ?? candidate.totalVotes ?? 0,
     province: candidate.province ?? candidate.provinceName ?? "",
@@ -289,8 +391,8 @@ function normalizeResult(result) {
     party: result.party ?? result.partyName ?? "Independent",
     votes: Number(result.votes ?? result.totalVotes ?? 0),
     percent: Number(result.percent ?? result.percentage ?? 0),
-    imageUrl: result.imageUrl ?? result.image ?? "../Images/Profile.jpg",
-    symbolUrl: result.symbolUrl ?? result.symbol ?? "../Images/Profile.jpg",
+    imageUrl: result.imageUrl ?? result.image ?? DEFAULT_IMAGE,
+    symbolUrl: result.symbolUrl ?? result.symbol ?? DEFAULT_IMAGE,
     province: result.province ?? result.provinceName ?? "",
     district: result.district ?? result.districtName ?? "",
     municipality: result.municipality ?? result.municipalityName ?? result.localLevel ?? "",
@@ -300,6 +402,44 @@ function normalizeResult(result) {
 async function getCandidates() {
   const data = await apiRequest(API_ENDPOINTS.candidates);
   return (data?.candidates || data || []).map(normalizeCandidate);
+}
+
+function developerCard(developer) {
+  const name = developer.name ?? developer.fullName ?? "Developer";
+  const role = developer.role ?? developer.roleTitle ?? "Developer";
+  const bio = developer.bio ?? "";
+  const skills = developer.skills ?? "";
+  const image = developer.image ?? developer.imageUrl ?? DEFAULT_IMAGE;
+
+  return `
+    <article class="developer-card">
+      <img src="${escapeHtml(image)}" alt="${escapeHtml(name)}">
+      <div>
+        <p class="eyebrow">${escapeHtml(role)}</p>
+        <h2>${escapeHtml(name)}</h2>
+        <p>${escapeHtml(bio)}</p>
+        <span>${escapeHtml(skills)}</span>
+      </div>
+    </article>
+  `;
+}
+
+async function initDevelopersPage() {
+  const container = $("#developerGrid");
+  if (!container) return;
+
+  container.innerHTML = `<div class="empty-state">Loading developer details...</div>`;
+
+  try {
+    const data = await apiRequest(API_ENDPOINTS.developers);
+    const developers = data?.developers || data || [];
+    container.innerHTML = developers.length
+      ? developers.map(developerCard).join("")
+      : `<div class="empty-state">Developer details are not available.</div>`;
+  } catch (error) {
+    container.innerHTML = `<div class="empty-state">Developer details are unavailable.</div>`;
+    showAlert(error.message, "error");
+  }
 }
 
 async function initRegisterPage() {
@@ -683,6 +823,8 @@ function initCandidateForm() {
   const form = $("#candidateForm");
   if (!form) return;
 
+  initImagePreviews(form);
+
   initLocationSelector({
     provinceId: "candidateProvince",
     districtId: "candidateDistrict",
@@ -694,11 +836,11 @@ function initCandidateForm() {
     clearAlert();
     if (!validateForm(form)) return;
 
-    const payload = serializeForm(form);
     const submit = form.querySelector("button[type='submit']");
     setButtonLoading(submit, true, "Saving");
 
     try {
+      const payload = await candidatePayloadFromForm(form);
       await apiRequest(API_ENDPOINTS.adminCandidates, {
         method: "POST",
         body: JSON.stringify(payload),
@@ -706,6 +848,7 @@ function initCandidateForm() {
 
       showAlert("Candidate saved successfully.", "success");
       form.reset();
+      resetImagePreviews(form);
       resetLocationSelector("candidateDistrict", "candidateMunicipality");
       await loadAdminStats();
       await renderAdminCandidates();
@@ -783,6 +926,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAdminLoginPage();
   initVotePage();
   initResultsPage();
+  initDevelopersPage();
   initProfilePage();
   initAdminPage();
 });
