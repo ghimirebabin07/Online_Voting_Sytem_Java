@@ -27,10 +27,37 @@
         <section class="section-title">
           <p class="eyebrow">Live Count</p>
           <h1>Election results</h1>
-          <p>Results load from the backend result endpoint and display candidate totals with vote percentages.</p>
+          <p>Results are shown region by region so each local contest stays separate.</p>
         </section>
 
         <div id="pageAlert" hidden></div>
+
+        <section class="panel location-panel" aria-label="Result region">
+          <div id="resultVoterLocation" hidden>
+            <p class="eyebrow">Registered voting area</p>
+            <h2 id="resultLocationText">Checking your registration</h2>
+          </div>
+          <form id="resultRegionFilter" class="form location-grid" novalidate hidden>
+            <div class="form-row">
+              <label for="resultProvince">Province</label>
+              <select id="resultProvince" name="province">
+                <option value="">Select province</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="resultDistrict">District</label>
+              <select id="resultDistrict" name="district" disabled>
+                <option value="">Select district</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="resultMunicipality">Municipality</label>
+              <select id="resultMunicipality" name="municipality" disabled>
+                <option value="">Select municipality</option>
+              </select>
+            </div>
+          </form>
+        </section>
 
         <section class="result-summary">
           <article class="stat-card">
