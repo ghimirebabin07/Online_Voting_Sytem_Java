@@ -315,6 +315,55 @@ textarea {
   box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
 }
 
+.image-picker {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 64px;
+  gap: 12px;
+  align-items: center;
+}
+
+.image-picker input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 14px;
+  color: #ffffff;
+  background: var(--primary);
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.file-name {
+  min-width: 0;
+  color: var(--muted);
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.image-picker img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-soft);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
