@@ -27,31 +27,13 @@
         <section class="section-title">
           <p class="eyebrow">Ballot</p>
           <h1>Cast your vote</h1>
-          <p>Select your province, district, and municipality to view candidates registered for that local voting area.</p>
+          <p>Your ballot is matched with the province, district, and municipality used during registration.</p>
         </section>
 
         <div id="pageAlert" hidden></div>
         <section class="panel location-panel" aria-label="Voting location">
-          <div class="form location-grid">
-            <div class="form-row">
-              <label for="voteProvince">Province</label>
-              <select id="voteProvince" name="province" required>
-                <option value="">Select province</option>
-              </select>
-            </div>
-            <div class="form-row">
-              <label for="voteDistrict">District</label>
-              <select id="voteDistrict" name="district" required disabled>
-                <option value="">Select district</option>
-              </select>
-            </div>
-            <div class="form-row">
-              <label for="voteMunicipality">Municipality</label>
-              <select id="voteMunicipality" name="municipality" required disabled>
-                <option value="">Select municipality</option>
-              </select>
-            </div>
-          </div>
+          <p class="eyebrow">Registered voting area</p>
+          <h2 id="voteLocationText">Checking your registration</h2>
         </section>
         <section id="candidateContainer" class="candidate-list"></section>
       </main>
