@@ -15,6 +15,7 @@ import java.util.Map;
 
 public class AdminServlet extends HttpServlet {
 
+    private static final String DEFAULT_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Crect width='160' height='160' fill='%23e2e8f0'/%3E%3Ccircle cx='80' cy='62' r='30' fill='%2394a3b8'/%3E%3Cpath d='M30 140c8-30 28-46 50-46s42 16 50 46' fill='%2394a3b8'/%3E%3C/svg%3E";
     private final CandidateDAO candidateDAO = new CandidateDAO();
     private final UserDAO userDAO = new UserDAO();
 
@@ -62,8 +63,8 @@ public class AdminServlet extends HttpServlet {
             Candidate candidate = candidateDAO.create(
                     name.trim(),
                     party.trim(),
-                    valueOrDefault(image, "../Images/Profile.jpg"),
-                    valueOrDefault(symbol, "../Images/Profile.jpg"),
+                    valueOrDefault(image, DEFAULT_IMAGE),
+                    valueOrDefault(symbol, DEFAULT_IMAGE),
                     valueOrDefault(description, "Candidate information will be updated by the election administrator."),
                     province.trim(),
                     district.trim(),
