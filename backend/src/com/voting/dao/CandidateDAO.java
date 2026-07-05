@@ -14,15 +14,17 @@ public class CandidateDAO {
 
     public List<Candidate> findAll() throws SQLException {
 
-        String sql = "SELECT id, name, party, image_path, symbol_path, description, vote_count FROM candidates ORDER BY id";
+        String sql = candidateSelectColumns() + " FROM candidates ORDER BY id";
         List<Candidate> candidates = new ArrayList<>();
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection con = DBConnection.getConnection()) {
+            ensureCandidateLocationColumns(con);
 
-            while (rs.next()) {
-                candidates.add(mapCandidate(rs));
+            try (PreparedStatement ps = con.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    candidates.add(mapCandidate(rs));
+                }
             }
         }
 
@@ -42,14 +44,16 @@ public class CandidateDAO {
         }
     }
 
-    public Candidate create(String name, String party, String imagePath, String symbolPath, String description) throws SQLException {
+    public Candidate create(String name, String party, String imagePath, String symbolPath, String description,
+                            String province, String district, String municipality) throws SQLException {
 
         try (Connection con = DBConnection.getConnection()) {
+            ensureCandidateLocationColumns(con);
             SQLException lastError = null;
 
             for (int attempt = 0; attempt < 3; attempt++) {
                 try {
-                    return insertCandidate(con, name, party, imagePath, symbolPath, description);
+                    return insertCandidate(con, name, party, imagePath, symbolPath, description, province, district, municipality);
                 } catch (SQLException e) {
                     lastError = e;
 
@@ -67,9 +71,11 @@ public class CandidateDAO {
         }
     }
 
-    private Candidate insertCandidate(Connection con, String name, String party, String imagePath, String symbolPath, String description) throws SQLException {
+    private Candidate insertCandidate(Connection con, String name, String party, String imagePath, String symbolPath,
+                                      String description, String province, String district, String municipality) throws SQLException {
 
-        String sql = "INSERT INTO candidates(name, party, image_path, symbol_path, description) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO candidates(name, party, image_path, symbol_path, description, province, district, municipality) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, name);
@@ -77,6 +83,9 @@ public class CandidateDAO {
             ps.setString(3, imagePath);
             ps.setString(4, symbolPath);
             ps.setString(5, description);
+            ps.setString(6, province);
+            ps.setString(7, district);
+            ps.setString(8, municipality);
 
             ps.executeUpdate();
 
@@ -111,8 +120,9 @@ public class CandidateDAO {
     }
 
     private Candidate findById(Connection con, int id) throws SQLException {
+        ensureCandidateLocationColumns(con);
 
-        String sql = "SELECT id, name, party, image_path, symbol_path, description, vote_count FROM candidates WHERE id = ?";
+        String sql = candidateSelectColumns() + " FROM candidates WHERE id = ?";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -148,7 +158,24 @@ public class CandidateDAO {
                 rs.getString("image_path"),
                 rs.getString("symbol_path"),
                 rs.getString("description"),
+                rs.getString("province"),
+                rs.getString("district"),
+                rs.getString("municipality"),
                 rs.getInt("vote_count")
         );
+    }
+
+    private String candidateSelectColumns() {
+        return "SELECT id, name, party, image_path, symbol_path, description, province, district, municipality, vote_count";
+    }
+
+    private void ensureCandidateLocationColumns(Connection con) throws SQLException {
+        try (Statement statement = con.createStatement()) {
+            statement.executeUpdate("ALTER TABLE candidates ALTER COLUMN image_path TYPE TEXT");
+            statement.executeUpdate("ALTER TABLE candidates ALTER COLUMN symbol_path TYPE TEXT");
+            statement.executeUpdate("ALTER TABLE candidates ADD COLUMN IF NOT EXISTS province VARCHAR(80)");
+            statement.executeUpdate("ALTER TABLE candidates ADD COLUMN IF NOT EXISTS district VARCHAR(80)");
+            statement.executeUpdate("ALTER TABLE candidates ADD COLUMN IF NOT EXISTS municipality VARCHAR(120)");
+        }
     }
 }
