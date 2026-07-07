@@ -7,6 +7,9 @@ public class User {
     private String mobile;
     private String email;
     private String voterId;
+    private String province;
+    private String district;
+    private String municipality;
     private String passwordHash;
     private String role;
     private boolean hasVoted;
@@ -14,12 +17,17 @@ public class User {
     public User() {
     }
 
-    public User(int id, String fullName, String mobile, String email, String voterId, String passwordHash, String role, boolean hasVoted) {
+    public User(int id, String fullName, String mobile, String email, String voterId,
+                String province, String district, String municipality,
+                String passwordHash, String role, boolean hasVoted) {
         this.id = id;
         this.fullName = fullName;
         this.mobile = mobile;
         this.email = email;
         this.voterId = voterId;
+        this.province = province;
+        this.district = district;
+        this.municipality = municipality;
         this.passwordHash = passwordHash;
         this.role = role;
         this.hasVoted = hasVoted;
@@ -63,6 +71,30 @@ public class User {
 
     public void setVoterId(String voterId) {
         this.voterId = voterId;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getMunicipality() {
+        return municipality;
+    }
+
+    public void setMunicipality(String municipality) {
+        this.municipality = municipality;
     }
 
     public String getPasswordHash() {
