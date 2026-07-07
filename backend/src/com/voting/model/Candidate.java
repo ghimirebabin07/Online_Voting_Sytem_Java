@@ -8,18 +8,25 @@ public class Candidate {
     private String imagePath;
     private String symbolPath;
     private String description;
+    private String province;
+    private String district;
+    private String municipality;
     private int voteCount;
 
     public Candidate() {
     }
 
-    public Candidate(int id, String name, String party, String imagePath, String symbolPath, String description, int voteCount) {
+    public Candidate(int id, String name, String party, String imagePath, String symbolPath, String description,
+                     String province, String district, String municipality, int voteCount) {
         this.id = id;
         this.name = name;
         this.party = party;
         this.imagePath = imagePath;
         this.symbolPath = symbolPath;
         this.description = description;
+        this.province = province;
+        this.district = district;
+        this.municipality = municipality;
         this.voteCount = voteCount;
     }
 
@@ -69,6 +76,30 @@ public class Candidate {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getMunicipality() {
+        return municipality;
+    }
+
+    public void setMunicipality(String municipality) {
+        this.municipality = municipality;
     }
 
     public int getVoteCount() {
