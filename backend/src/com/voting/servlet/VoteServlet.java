@@ -92,6 +92,9 @@ public class VoteServlet extends HttpServlet {
                 + "\"image\":\"" + JsonUtil.escape(candidate.getImagePath()) + "\","
                 + "\"symbol\":\"" + JsonUtil.escape(candidate.getSymbolPath()) + "\","
                 + "\"description\":\"" + JsonUtil.escape(candidate.getDescription()) + "\","
+                + "\"province\":\"" + JsonUtil.escape(candidate.getProvince()) + "\","
+                + "\"district\":\"" + JsonUtil.escape(candidate.getDistrict()) + "\","
+                + "\"municipality\":\"" + JsonUtil.escape(candidate.getMunicipality()) + "\","
                 + "\"votes\":" + candidate.getVoteCount()
                 + "}";
     }
