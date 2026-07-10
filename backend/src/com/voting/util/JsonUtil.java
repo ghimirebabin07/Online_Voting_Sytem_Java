@@ -6,12 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class JsonUtil {
-
-    private static final Pattern JSON_FIELD = Pattern.compile("\"([^\"]+)\"\\s*:\\s*(\"((?:\\\\.|[^\"])*)\"|null|-?\\d+(?:\\.\\d+)?|true|false)");
 
     private JsonUtil() {
     }
@@ -83,13 +79,7 @@ public final class JsonUtil {
             }
         }
 
-        Matcher matcher = JSON_FIELD.matcher(body.toString());
-        while (matcher.find()) {
-            String rawValue = matcher.group(3) != null ? unescape(matcher.group(3)) : matcher.group(2);
-            if (!"null".equals(rawValue)) {
-                values.put(matcher.group(1), rawValue);
-            }
-        }
+        parseFlatObject(body.toString(), values);
 
         return values;
     }
@@ -107,12 +97,144 @@ public final class JsonUtil {
         return null;
     }
 
-    private static String unescape(String value) {
-        return value
-                .replace("\\\"", "\"")
-                .replace("\\\\", "\\")
-                .replace("\\n", "\n")
-                .replace("\\r", "\r")
-                .replace("\\t", "\t");
+    private static void parseFlatObject(String json, Map<String, String> values) {
+        int index = skipWhitespace(json, 0);
+        if (index >= json.length() || json.charAt(index) != '{') {
+            return;
+        }
+        index++;
+
+        while (index < json.length()) {
+            index = skipWhitespace(json, index);
+            if (index >= json.length() || json.charAt(index) == '}') {
+                return;
+            }
+            if (json.charAt(index) != '"') {
+                return;
+            }
+
+            ParseResult key = readJsonString(json, index);
+            if (key == null) {
+                return;
+            }
+
+            index = skipWhitespace(json, key.nextIndex);
+            if (index >= json.length() || json.charAt(index) != ':') {
+                return;
+            }
+            index = skipWhitespace(json, index + 1);
+
+            ParseResult value = readJsonValue(json, index);
+            if (value == null) {
+                return;
+            }
+            if (value.value != null) {
+                values.put(key.value, value.value);
+            }
+
+            index = skipWhitespace(json, value.nextIndex);
+            if (index < json.length() && json.charAt(index) == ',') {
+                index++;
+            }
+        }
+    }
+
+    private static ParseResult readJsonValue(String json, int index) {
+        if (index >= json.length()) {
+            return null;
+        }
+
+        if (json.charAt(index) == '"') {
+            return readJsonString(json, index);
+        }
+
+        int end = index;
+        while (end < json.length() && json.charAt(end) != ',' && json.charAt(end) != '}') {
+            end++;
+        }
+
+        String rawValue = json.substring(index, end).trim();
+        if (rawValue.isEmpty() || "null".equals(rawValue)) {
+            return new ParseResult(null, end);
+        }
+
+        return new ParseResult(rawValue, end);
+    }
+
+    private static ParseResult readJsonString(String json, int index) {
+        if (index >= json.length() || json.charAt(index) != '"') {
+            return null;
+        }
+
+        StringBuilder value = new StringBuilder();
+        for (int i = index + 1; i < json.length(); i++) {
+            char ch = json.charAt(i);
+            if (ch == '"') {
+                return new ParseResult(value.toString(), i + 1);
+            }
+            if (ch != '\\') {
+                value.append(ch);
+                continue;
+            }
+            if (++i >= json.length()) {
+                return null;
+            }
+            appendEscapedChar(value, json, i);
+            if (json.charAt(i) == 'u') {
+                i += 4;
+            }
+        }
+
+        return null;
+    }
+
+    private static void appendEscapedChar(StringBuilder value, String json, int escapeIndex) {
+        char escaped = json.charAt(escapeIndex);
+        switch (escaped) {
+            case '"':
+            case '\\':
+            case '/':
+                value.append(escaped);
+                break;
+            case 'b':
+                value.append('\b');
+                break;
+            case 'f':
+                value.append('\f');
+                break;
+            case 'n':
+                value.append('\n');
+                break;
+            case 'r':
+                value.append('\r');
+                break;
+            case 't':
+                value.append('\t');
+                break;
+            case 'u':
+                if (escapeIndex + 4 < json.length()) {
+                    value.append((char) Integer.parseInt(json.substring(escapeIndex + 1, escapeIndex + 5), 16));
+                }
+                break;
+            default:
+                value.append(escaped);
+        }
+    }
+
+    private static int skipWhitespace(String value, int index) {
+        while (index < value.length() && Character.isWhitespace(value.charAt(index))) {
+            index++;
+        }
+        return index;
+    }
+
+    private static class ParseResult {
+        private final String value;
+        private final int nextIndex;
+
+        private ParseResult(String value, int nextIndex) {
+            this.value = value;
+            this.nextIndex = nextIndex;
+        }
     }
 }
