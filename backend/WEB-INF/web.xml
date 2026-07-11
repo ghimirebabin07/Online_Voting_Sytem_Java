@@ -64,6 +64,24 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>LocationServlet</servlet-name>
+        <servlet-class>com.voting.servlet.LocationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LocationServlet</servlet-name>
+        <url-pattern>/api/locations</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeveloperServlet</servlet-name>
+        <servlet-class>com.voting.servlet.DeveloperServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeveloperServlet</servlet-name>
+        <url-pattern>/api/developers</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>ResultServlet</servlet-name>
         <servlet-class>com.voting.servlet.ResultServlet</servlet-class>
     </servlet>
