@@ -11,7 +11,7 @@ import java.sql.Statement;
 public class DeveloperDAO {
 
     public String findAllJson() throws SQLException {
-        String sql = "SELECT full_name, role_title, bio, skills, image_path "
+        String sql = "SELECT full_name, role_title, bio, skills, image_path, linkedin_url "
                 + "FROM developers "
                 + "ORDER BY display_order, id";
 
@@ -39,6 +39,8 @@ public class DeveloperDAO {
                             .append(JsonUtil.escape(rs.getString("skills")))
                             .append("\",\"image\":\"")
                             .append(JsonUtil.escape(rs.getString("image_path")))
+                            .append("\",\"linkedin\":\"")
+                            .append(JsonUtil.escape(rs.getString("linkedin_url")))
                             .append("\"}");
                     first = false;
                 }
@@ -58,9 +60,11 @@ public class DeveloperDAO {
                     + "bio TEXT,"
                     + "skills VARCHAR(180),"
                     + "image_path TEXT,"
+                    + "linkedin_url TEXT,"
                     + "display_order INTEGER NOT NULL DEFAULT 0"
                     + ")");
             statement.executeUpdate("ALTER TABLE developers ALTER COLUMN image_path TYPE TEXT");
+            statement.executeUpdate("ALTER TABLE developers ADD COLUMN IF NOT EXISTS linkedin_url TEXT");
             statement.executeUpdate("ALTER TABLE developers ADD COLUMN IF NOT EXISTS display_order INTEGER NOT NULL DEFAULT 0");
         }
     }
