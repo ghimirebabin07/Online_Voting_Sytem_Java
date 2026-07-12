@@ -133,30 +133,75 @@ function serializeForm(form) {
   return Object.fromEntries(new FormData(form).entries());
 }
 
-const MAX_CANDIDATE_IMAGE_SIZE = 1024 * 1024;
+const MAX_CANDIDATE_IMAGE_SIZE = 4 * 1024 * 1024;
+const MAX_CANDIDATE_IMAGE_DATA_URL_SIZE = 350 * 1024;
+const MAX_CANDIDATE_IMAGE_DIMENSION = 512;
 
-function readImageFile(file, label) {
+function readFileAsDataUrl(file, label) {
   return new Promise((resolve, reject) => {
-    if (!file || file.size === 0) {
-      resolve("");
-      return;
-    }
-
-    if (!file.type.startsWith("image/")) {
-      reject(new Error(`${label} must be an image file.`));
-      return;
-    }
-
-    if (file.size > MAX_CANDIDATE_IMAGE_SIZE) {
-      reject(new Error(`${label} must be 1 MB or smaller.`));
-      return;
-    }
-
     const reader = new FileReader();
     reader.addEventListener("load", () => resolve(reader.result));
     reader.addEventListener("error", () => reject(new Error(`${label} could not be read.`)));
     reader.readAsDataURL(file);
   });
+}
+
+function loadImage(dataUrl, label) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.addEventListener("load", () => resolve(image));
+    image.addEventListener("error", () => reject(new Error(`${label} could not be loaded.`)));
+    image.src = dataUrl;
+  });
+}
+
+async function compressImageFile(file, label) {
+  const dataUrl = await readFileAsDataUrl(file, label);
+
+  if (dataUrl.length <= MAX_CANDIDATE_IMAGE_DATA_URL_SIZE || file.type === "image/svg+xml") {
+    return dataUrl;
+  }
+
+  const source = await loadImage(dataUrl, label);
+  const scale = Math.min(
+    1,
+    MAX_CANDIDATE_IMAGE_DIMENSION / source.naturalWidth,
+    MAX_CANDIDATE_IMAGE_DIMENSION / source.naturalHeight
+  );
+  const width = Math.max(1, Math.round(source.naturalWidth * scale));
+  const height = Math.max(1, Math.round(source.naturalHeight * scale));
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  canvas.width = width;
+  canvas.height = height;
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, width, height);
+  context.drawImage(source, 0, 0, width, height);
+
+  for (const quality of [0.82, 0.72, 0.62, 0.52]) {
+    const compressed = canvas.toDataURL("image/jpeg", quality);
+    if (compressed.length <= MAX_CANDIDATE_IMAGE_DATA_URL_SIZE || quality === 0.52) {
+      return compressed;
+    }
+  }
+
+  return canvas.toDataURL("image/jpeg", 0.52);
+}
+
+async function readImageFile(file, label) {
+  if (!file || file.size === 0) {
+    return "";
+  }
+
+  if (!file.type.startsWith("image/")) {
+    throw new Error(`${label} must be an image file.`);
+  }
+
+  if (file.size > MAX_CANDIDATE_IMAGE_SIZE) {
+    throw new Error(`${label} must be 4 MB or smaller.`);
+  }
+
+  return compressImageFile(file, label);
 }
 
 async function candidatePayloadFromForm(form) {
@@ -410,6 +455,11 @@ function developerCard(developer) {
   const bio = developer.bio ?? "";
   const skills = developer.skills ?? "";
   const image = developer.image ?? developer.imageUrl ?? DEFAULT_IMAGE;
+  const linkedin = developer.linkedin ?? developer.linkedinUrl ?? "";
+  const hasLinkedIn = /^https?:\/\/(www\.)?linkedin\.com\//i.test(linkedin);
+  const linkedinButton = hasLinkedIn
+    ? `<a class="developer-linkedin" href="${escapeHtml(linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`
+    : `<button class="developer-linkedin" type="button" disabled>LinkedIn</button>`;
 
   return `
     <article class="developer-card">
@@ -419,6 +469,7 @@ function developerCard(developer) {
         <h2>${escapeHtml(name)}</h2>
         <p>${escapeHtml(bio)}</p>
         <span>${escapeHtml(skills)}</span>
+        ${linkedinButton}
       </div>
     </article>
   `;
@@ -608,19 +659,25 @@ async function initVotePage() {
 }
 
 function candidateCard(candidate, withVoteAction = false) {
+  const name = escapeHtml(candidate.name);
+  const party = escapeHtml(candidate.party);
+  const imageUrl = escapeHtml(candidate.imageUrl || DEFAULT_IMAGE);
+  const symbolUrl = escapeHtml(candidate.symbolUrl || DEFAULT_IMAGE);
+  const municipality = escapeHtml(candidate.municipality);
+  const district = escapeHtml(candidate.district);
   const action = withVoteAction
-    ? `<button class="btn btn-primary" data-vote-id="${candidate.id}">Vote</button>`
+    ? `<button class="btn btn-primary" data-vote-id="${escapeHtml(candidate.id)}">Vote</button>`
     : "";
 
   return `
     <article class="candidate-card">
-      <img class="candidate-symbol" src="${candidate.symbolUrl}" alt="${candidate.party} symbol">
-      <img class="candidate-photo" src="${candidate.imageUrl}" alt="${candidate.name}">
+      <img class="candidate-symbol" src="${symbolUrl}" alt="${party} symbol">
+      <img class="candidate-photo" src="${imageUrl}" alt="${name}">
       <div class="candidate-body">
-        <p class="eyebrow">${candidate.party}</p>
-        <h3>${candidate.name}</h3>
-        ${candidate.municipality ? `<span class="candidate-location">${candidate.municipality}, ${candidate.district}</span>` : ""}
-        <p>${candidate.description}</p>
+        <p class="eyebrow">${party}</p>
+        <h3>${name}</h3>
+        ${candidate.municipality ? `<span class="candidate-location">${municipality}, ${district}</span>` : ""}
+        <p>${escapeHtml(candidate.description)}</p>
       </div>
       <div class="candidate-actions">
         ${action}
@@ -723,10 +780,10 @@ function renderResults(results, data = {}, location = null) {
       const percent = totalVotes ? ((result.votes / totalVotes) * 100).toFixed(1) : result.percent.toFixed(1);
       return `
         <article class="result-row">
-          <img src="${result.symbolUrl}" alt="${result.party} symbol">
+          <img src="${escapeHtml(result.symbolUrl || DEFAULT_IMAGE)}" alt="${escapeHtml(result.party)} symbol">
           <div>
-            <strong>${result.name}</strong>
-            <span>${result.party}</span>
+            <strong>${escapeHtml(result.name)}</strong>
+            <span>${escapeHtml(result.party)}</span>
             <div class="progress"><div style="width: ${percent}%"></div></div>
           </div>
           <p>${result.votes} votes<br><span>${percent}%</span></p>
