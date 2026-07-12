@@ -9,6 +9,45 @@ backend/target/
 *.ear
 .mvn/timing.properties
 
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa
+id_ed25519
+
+# Local database exports and development data
+backend/database/seed_data.sql
+*.dump
+*.backup
+*.bak
+*.sqlite
+*.sqlite3
+
+# Runtime uploads and generated local files
+uploads/
+backend/uploads/
+frontend/uploads/
+backend/WEB-INF/lib/
+*.log
+logs/
+
+# Keep only the developer photos used by the public team page
+frontend/Images/*
+!frontend/Images/babin.jpg
+!frontend/Images/sudesh.jpeg
+
+# Local machine notes/scripts
+Run steps for tomcat
+
 # IDE files
 .idea/
 *.iml
@@ -22,7 +61,5 @@ backend/target/
 # OS files
 .DS_Store
 Thumbs.db
-
-# Local environment files
-.env
+desktop.ini
 *.local

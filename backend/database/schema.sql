@@ -4,6 +4,9 @@ CREATE TABLE IF NOT EXISTS users (
     mobile VARCHAR(10) NOT NULL UNIQUE,
     email VARCHAR(160),
     voter_id VARCHAR(80) UNIQUE,
+    province VARCHAR(80),
+    district VARCHAR(80),
+    municipality VARCHAR(120),
     password_hash TEXT NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'VOTER',
     has_voted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -13,6 +16,9 @@ CREATE TABLE IF NOT EXISTS users (
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(160);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS voter_id VARCHAR(80);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS province VARCHAR(80);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS district VARCHAR(80);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS municipality VARCHAR(120);
 CREATE UNIQUE INDEX IF NOT EXISTS users_voter_id_unique ON users(voter_id) WHERE voter_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS candidates (
@@ -22,11 +28,40 @@ CREATE TABLE IF NOT EXISTS candidates (
     image_path TEXT,
     symbol_path TEXT,
     description TEXT,
+    province VARCHAR(80),
+    district VARCHAR(80),
+    municipality VARCHAR(120),
     vote_count INTEGER NOT NULL DEFAULT 0 CHECK (vote_count >= 0)
 );
 
 ALTER TABLE candidates ALTER COLUMN image_path TYPE TEXT;
 ALTER TABLE candidates ALTER COLUMN symbol_path TYPE TEXT;
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS province VARCHAR(80);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS district VARCHAR(80);
+ALTER TABLE candidates ADD COLUMN IF NOT EXISTS municipality VARCHAR(120);
+
+CREATE TABLE IF NOT EXISTS election_locations (
+    id SERIAL PRIMARY KEY,
+    province VARCHAR(80) NOT NULL,
+    district VARCHAR(80) NOT NULL,
+    municipality VARCHAR(120) NOT NULL,
+    UNIQUE (province, district, municipality)
+);
+
+CREATE TABLE IF NOT EXISTS developers (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(120) NOT NULL,
+    role_title VARCHAR(120) NOT NULL,
+    bio TEXT,
+    skills VARCHAR(180),
+    image_path TEXT,
+    linkedin_url TEXT,
+    display_order INTEGER NOT NULL DEFAULT 0
+);
+
+ALTER TABLE developers ALTER COLUMN image_path TYPE TEXT;
+ALTER TABLE developers ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
+ALTER TABLE developers ADD COLUMN IF NOT EXISTS display_order INTEGER NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS votes (
     id SERIAL PRIMARY KEY,
@@ -34,36 +69,3 @@ CREATE TABLE IF NOT EXISTS votes (
     candidate_id INTEGER NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
     voted_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
-INSERT INTO candidates (id, name, party, image_path, symbol_path, description)
-VALUES
-    (1, 'Balen Shah', 'Rastriya Swatantra Party', '../Images/Balen_.jpg', '../Images/RSP.jpg', 'Strong Engineering Background focused on development and transparency.'),
-    (2, 'Rabi Lamichhane', 'Rastriya Swatantra Party', '../Images/Rabi.jpg', '../Images/RSP.jpg', 'Advocates anti-corruption reforms and governance transparency.'),
-    (3, 'Sobita Gautam', 'Rastriya Swatantra Party', '../Images/Sobita.jpg', '../Images/RSP.jpg', 'Focused on women empowerment and policy reform.'),
-    (4, 'KP Sharma Oli', 'UML', '../Images/Kp.jpg', '../Images/UML.jpg', 'Focused on infrastructure and national development.'),
-    (5, 'Pushpa Kamal Dahal', 'Maoist Center', '../Images/Puspa.jpg', '../Images/Maoist.jpg', 'Promotes social justice and democratic reforms.'),
-    (6, 'Sher Bahadur Deuba', 'Congress', '../Images/Sher.jpg', '../Images/Congress.jpg', 'Experienced politician focused on governance reforms.')
-ON CONFLICT (id) DO UPDATE SET
-    name = EXCLUDED.name,
-    party = EXCLUDED.party,
-    image_path = EXCLUDED.image_path,
-    symbol_path = EXCLUDED.symbol_path,
-    description = EXCLUDED.description;
-
-SELECT setval('candidates_id_seq', (SELECT MAX(id) FROM candidates));
-
-INSERT INTO users (full_name, mobile, email, voter_id, password_hash, role)
-VALUES (
-    'System Administrator',
-    '9800000000',
-    'admin@voting.local',
-    'admin',
-    '120000:TWf+EgpcF9msR1jVsWTjCQ==:dgKtZqyenZ46UX1JOk8yHb7aZZMhJyLSS9hD5eYV300=',
-    'ADMIN'
-)
-ON CONFLICT (mobile) DO UPDATE SET
-    full_name = EXCLUDED.full_name,
-    email = EXCLUDED.email,
-    voter_id = EXCLUDED.voter_id,
-    password_hash = EXCLUDED.password_hash,
-    role = EXCLUDED.role;
