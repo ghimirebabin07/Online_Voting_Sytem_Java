@@ -19,6 +19,7 @@ public class DBConnection {
     private static final String PASSWORD = value("VOTING_DB_PASSWORD", "voting.db.password", null);
 
     static {
+        
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
