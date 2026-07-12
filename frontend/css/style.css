@@ -690,6 +690,28 @@ textarea {
   font-weight: 800;
 }
 
+.developer-linkedin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+  min-height: 42px;
+  padding: 0 16px;
+  color: #ffffff;
+  background: #0a66c2;
+  border: 1px solid #0a66c2;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.developer-linkedin:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 @media (max-width: 900px) {
   .auth-page,
   .hero,
